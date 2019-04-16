@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="height_month_title">40dp</dimen>
+    <dimen name="height_week_day_header">32dp</dimen>
+
+    <!--size-->
+    <dimen name="text_calendar_padding">16dp</dimen>
+    <dimen name="text_calendar_date">16sp</dimen>
+    <dimen name="text_month_title">16sp</dimen>
+    <dimen name="text_week_day_header">12sp</dimen>
+
+    <!--width-->
+    <dimen name="width_circle_stroke">1dp</dimen>
+
+    <!--miscellaneous-->
+    <dimen name="dimen_date_text_view">48dp</dimen>
+    <dimen name="radius_event_dot">2dp</dimen>
+    <dimen name="padding_top_month_title">8dp</dimen>
+
+    <!--rounded bottom sheet-->
+    <dimen name="bottom_sheet_corner_radius">20dp</dimen>
+    <dimen name="bottom_sheet_top_padding">10dp</dimen>
+
+    <!--app dimens-->
+    <dimen name="app_title">@dimen/_15sdp</dimen>
+    <dimen name="app_mid_header">@dimen/_14sdp</dimen>
+    <dimen name="app_mini_title">@dimen/_13sdp</dimen>
+    <dimen name="app_header">@dimen/_12sdp</dimen>
+    <dimen name="app_content">@dimen/_11sdp</dimen>
+    <dimen name="app_small">@dimen/_10sdp</dimen>
+    <dimen name="app_dashboard">@dimen/_30sdp</dimen>
+    <dimen name="app_very_small">@dimen/_9sdp</dimen>
+
+</resources>
