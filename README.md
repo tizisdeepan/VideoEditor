@@ -1,1 +1,1 @@
-# videotrimmer
+# Video Trimmer
