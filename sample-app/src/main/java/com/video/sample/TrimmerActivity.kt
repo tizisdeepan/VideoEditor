@@ -33,10 +33,6 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
             timeLine.setMaxDuration(10)
             timeLine.setOnTrimVideoListener(this)
             timeLine.setOnVideoListener(this)
-//        val rootDirectory = "${Environment.getExternalStorageDirectory()}${File.separator}Zoho Social${File.separator}media${File.separator}Zoho Social Images"
-//        val folder = File(rootDirectory)
-//        if (!folder.exists()) folder.mkdirs()
-//        timeLine.destinationPath = rootDirectory
             timeLine.setVideoURI(Uri.parse(path))
             timeLine.setVideoInformationVisibility(true)
         }
