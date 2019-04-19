@@ -60,7 +60,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private val REQUEST_VIDEO_TRIMMER = 0x01
-        private val REQUEST_STORAGE_READ_ACCESS_PERMISSION = 101
         internal val EXTRA_VIDEO_PATH = "EXTRA_VIDEO_PATH"
     }
 

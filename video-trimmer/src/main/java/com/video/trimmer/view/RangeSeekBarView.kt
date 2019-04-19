@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import com.video.trimmer.R
 import com.video.trimmer.interfaces.OnRangeSeekBarListener
 
 
@@ -268,9 +269,9 @@ class RangeSeekBarView @JvmOverloads constructor(context: Context, attrs: Attrib
         if (thumbs.isNotEmpty()) {
             for (th in thumbs) {
                 if (th.index == 0) {
-                    canvas.drawBitmap(th.bitmap, th.pos + paddingLeft, (paddingTop + mHeightTimeLine).toFloat(), null)
+                    canvas.drawBitmap(th.bitmap, th.pos + paddingLeft, 0f, null)
                 } else {
-                    canvas.drawBitmap(th.bitmap, th.pos - paddingRight, (paddingTop + mHeightTimeLine).toFloat(), null)
+                    canvas.drawBitmap(th.bitmap, th.pos - paddingRight, 0f, null)
                 }
             }
         }

@@ -7,6 +7,7 @@ import android.graphics.Rect
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
+import com.video.trimmer.R
 import com.video.trimmer.interfaces.OnProgressVideoListener
 import com.video.trimmer.interfaces.OnRangeSeekBarListener
 

@@ -49,7 +49,7 @@ object TrimVideoUtils {
         // at such a sample we SHOULD make sure that the start of the new fragment is exactly
         // such a frame
         for (track in tracks) {
-            if (track.syncSamples != null && track.syncSamples.size > 0) {
+            if (track.syncSamples != null && track.syncSamples.isNotEmpty()) {
                 if (timeCorrected) {
                     // This exception here could be a false positive in case we have multiple tracks
                     // with sync samples at exactly the same positions. E.g. a single movie containing

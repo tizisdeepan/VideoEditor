@@ -8,8 +8,10 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.util.LongSparseArray
 import android.view.View
+import com.video.trimmer.R
 import com.video.trimmer.utils.BackgroundExecutor
 import com.video.trimmer.utils.UiThreadExecutor
+
 
 class TimeLineView @JvmOverloads constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
 
@@ -95,17 +97,14 @@ class TimeLineView @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
         if (mBitmapList != null) {
             canvas.save()
             var x = 0
-
             for (i in 0 until mBitmapList!!.size()) {
                 val bitmap = mBitmapList!!.get(i.toLong())
-
                 if (bitmap != null) {
                     canvas.drawBitmap(bitmap, x.toFloat(), 0f, null)
-                    x = x + bitmap.width
+                    x += bitmap.width
                 }
             }
         }

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -13,6 +14,7 @@ import android.widget.Toast
 import com.video.trimmer.interfaces.OnTrimVideoListener
 import com.video.trimmer.interfaces.OnVideoListener
 import kotlinx.android.synthetic.main.activity_trimmer.*
+import java.io.File
 
 class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListener {
 
@@ -30,11 +32,20 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
             mProgressDialog.setCancelable(false)
             mProgressDialog.setCanceledOnTouchOutside(false)
             mProgressDialog.setMessage(getString(R.string.trimming_progress))
-            timeLine.setMaxDuration(10)
-            timeLine.setOnTrimVideoListener(this)
-            timeLine.setOnVideoListener(this)
-            timeLine.setVideoURI(Uri.parse(path))
-            timeLine.setVideoInformationVisibility(true)
+            videoTrimmer.setMaxDuration(140)
+            videoTrimmer.setOnTrimVideoListener(this)
+            videoTrimmer.setOnVideoListener(this)
+            videoTrimmer.setVideoURI(Uri.parse(path))
+            videoTrimmer.setVideoInformationVisibility(true)
+            videoTrimmer.destinationPath = Environment.getExternalStorageDirectory().toString() + File.separator + "Zoho Social" + File.separator + "Videos" + File.separator
+        }
+
+        back.setOnClickListener {
+            videoTrimmer.onCancelClicked()
+        }
+
+        save.setOnClickListener {
+            videoTrimmer.onSaveClicked()
         }
     }
 
@@ -51,7 +62,7 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
             }
             runOnUiThread { Toast.makeText(this@TrimmerActivity, getString(R.string.video_saved_at, uri.path), Toast.LENGTH_SHORT).show() }
             val intent = Intent(Intent.ACTION_VIEW, uri)
-            intent.setDataAndType(uri, "video/mp4")
+            intent.setDataAndType(uri, "video/*")
             startActivity(intent)
             finish()
         }
@@ -60,7 +71,7 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
     override fun cancelAction() {
         RunOnUiThread(this@TrimmerActivity).safely {
             Toast.makeText(this@TrimmerActivity, "cancelAction", Toast.LENGTH_SHORT).show()
-            timeLine.destroy()
+            videoTrimmer.destroy()
             finish()
         }
     }

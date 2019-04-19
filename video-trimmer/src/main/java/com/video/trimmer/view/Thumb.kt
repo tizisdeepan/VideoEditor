@@ -3,6 +3,10 @@ package com.video.trimmer.view
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import com.video.trimmer.R
 import java.util.*
 
 class Thumb private constructor() {
@@ -43,11 +47,12 @@ class Thumb private constructor() {
                 if (i == 0) {
                     val resImageLeft = R.drawable.apptheme_text_select_handle_left
                     th.bitmap = BitmapFactory.decodeResource(resources, resImageLeft)
+//                    th.bitmap = drawableToBitmap(resources.getDrawable(R.drawable.apptheme_text_select_handle_left))
                 } else {
                     val resImageRight = R.drawable.apptheme_text_select_handle_right
                     th.bitmap = BitmapFactory.decodeResource(resources, resImageRight)
+//                    th.bitmap = drawableToBitmap(resources.getDrawable(R.drawable.apptheme_text_select_handle_right))
                 }
-
                 thumbs.add(th)
             }
 
@@ -60,6 +65,21 @@ class Thumb private constructor() {
 
         fun getHeightBitmap(thumbs: List<Thumb>): Int {
             return thumbs[0].heightBitmap
+        }
+
+        fun drawableToBitmap(drawable: Drawable): Bitmap {
+            var bitmap: Bitmap? = null
+            if (drawable is BitmapDrawable) {
+                if (drawable.bitmap != null) return drawable.bitmap
+            }
+            bitmap = if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+            else Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            if (bitmap != null) {
+                val canvas = Canvas(bitmap)
+                drawable.setBounds(0, 0, canvas.width, canvas.height)
+                drawable.draw(canvas)
+            }
+            return bitmap
         }
     }
 }
