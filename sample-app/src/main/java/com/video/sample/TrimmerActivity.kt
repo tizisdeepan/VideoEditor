@@ -79,7 +79,7 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
     override fun onError(message: String) {
         RunOnUiThread(this@TrimmerActivity).safely {
             mProgressDialog.cancel()
-            Toast.makeText(this@TrimmerActivity, message, Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this@TrimmerActivity, message, Toast.LENGTH_SHORT).show()
         }
     }
 

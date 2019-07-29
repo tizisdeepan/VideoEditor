@@ -68,7 +68,9 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp">
 
                 <com.video.trimmer.view.TimeLineView
                     android:id="@+id/timeLineView"

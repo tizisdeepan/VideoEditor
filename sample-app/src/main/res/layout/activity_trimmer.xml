@@ -42,7 +42,7 @@
 
     </RelativeLayout>
 
-    <com.video.trimmer.VideoTrimmer xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.video.trimmer.VideoTrimmer
         android:id="@+id/videoTrimmer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

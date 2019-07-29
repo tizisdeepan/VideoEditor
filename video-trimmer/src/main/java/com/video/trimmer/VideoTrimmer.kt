@@ -138,7 +138,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     fun onSaveClicked() {
         if (mStartPosition <= 0 && mEndPosition >= mDuration) {
-            if (mOnTrimVideoListener != null) mOnTrimVideoListener?.getResult(mSrc)
+            mOnTrimVideoListener?.getResult(mSrc)
         } else {
             mOnTrimVideoListener?.onTrimStarted()
             icon_video_play.visibility = View.VISIBLE
