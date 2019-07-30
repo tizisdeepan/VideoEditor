@@ -57,8 +57,8 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
         RunOnUiThread(this).safely {
             Toast.makeText(this, getString(R.string.video_saved_at, uri.path), Toast.LENGTH_SHORT).show()
             sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
-            val id = getVideoIdFromFilePath(uri.path)
-            Log.e("VIDEO ID", id.toString())
+//            val id = getVideoIdFromFilePath(uri.path)
+//            Log.e("VIDEO ID", id.toString())
         }
     }
 
