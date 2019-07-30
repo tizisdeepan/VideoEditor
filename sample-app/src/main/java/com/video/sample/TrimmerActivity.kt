@@ -16,6 +16,8 @@ import com.video.trimmer.interfaces.OnTrimVideoListener
 import com.video.trimmer.interfaces.OnVideoListener
 import kotlinx.android.synthetic.main.activity_trimmer.*
 import java.io.File
+import android.content.ContentResolver
+
 
 class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListener {
 
@@ -60,10 +62,13 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
         }
     }
 
-    private fun getVideoIdFromFilePath(filePath: String?): Long? {
-        val videosUri = MediaStore.Video.Media.getContentUri("internal")
-        val projection = arrayOf(MediaStore.Video.VideoColumns._ID)
-        val cursor = contentResolver.query(videosUri, projection, MediaStore.Video.VideoColumns.DATA + " LIKE ?", arrayOf(filePath), null)
+    private fun getVideoIdFromFilePath(filePath: String): Long? {
+        val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+        val selection = MediaStore.Video.Media.DATA
+        val selectionArgs = arrayOf(filePath)
+        val projection = arrayOf(MediaStore.Audio.Media._ID)
+        val sortOrder = MediaStore.Video.Media.TITLE + " ASC"
+        val cursor = contentResolver.query(uri, projection, "$selection=?", selectionArgs, sortOrder)
         cursor?.moveToFirst()
         val columnIndex = cursor?.getColumnIndex(projection[0])
         val videoId = if (columnIndex != null) cursor.getLong(columnIndex) else null
