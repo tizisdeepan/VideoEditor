@@ -188,84 +188,83 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     fun onSaveClicked() {
-        if (mStartPosition <= 0 && mEndPosition >= mDuration) mOnTrimVideoListener?.getResult(mSrc)
-        else {
-            mOnTrimVideoListener?.onTrimStarted()
-            icon_video_play.visibility = View.VISIBLE
-            video_loader.pause()
+        mOnTrimVideoListener?.onTrimStarted()
+        icon_video_play.visibility = View.VISIBLE
+        video_loader.pause()
 
-            val mediaMetadataRetriever = MediaMetadataRetriever()
-            mediaMetadataRetriever.setDataSource(context, mSrc)
-            val METADATA_KEY_DURATION = java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
+        val mediaMetadataRetriever = MediaMetadataRetriever()
+        mediaMetadataRetriever.setDataSource(context, mSrc)
+        val METADATA_KEY_DURATION = java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
 
-            val file = File(mSrc.path)
+        val file = File(mSrc.path)
 
-            if (mTimeVideo < MIN_TIME_FRAME) {
-                if (METADATA_KEY_DURATION - mEndPosition > MIN_TIME_FRAME - mTimeVideo) mEndPosition += MIN_TIME_FRAME - mTimeVideo
-                else if (mStartPosition > MIN_TIME_FRAME - mTimeVideo) mStartPosition -= MIN_TIME_FRAME - mTimeVideo
+        if (mTimeVideo < MIN_TIME_FRAME) {
+            if (METADATA_KEY_DURATION - mEndPosition > MIN_TIME_FRAME - mTimeVideo) mEndPosition += MIN_TIME_FRAME - mTimeVideo
+            else if (mStartPosition > MIN_TIME_FRAME - mTimeVideo) mStartPosition -= MIN_TIME_FRAME - mTimeVideo
+        }
+
+        val root = File(destinationPath)
+        root.mkdirs()
+        val outputFileUri = Uri.fromFile(File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path.substring(mSrc.path.lastIndexOf("/") + 1)))
+        val outPutPath = RealPathUtil.realPathFromUriApi19(context, outputFileUri)
+
+        Log.e("SOURCE", file.path)
+        Log.e("DESTINATION", outPutPath)
+
+        val ff = FFmpeg.getInstance(context)
+        ff.loadBinary(object : FFmpegLoadBinaryResponseHandler {
+            override fun onFinish() {
+                Log.e("FFmpegLoad", "onFinish")
             }
 
-            val root = File(destinationPath)
-            root.mkdirs()
-            val outputFileUri = Uri.fromFile(File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path.substring(mSrc.path.lastIndexOf("/") + 1)))
-            val outPutPath = RealPathUtil.realPathFromUriApi19(context, outputFileUri)
+            override fun onSuccess() {
+                Log.e("FFmpegLoad", "onSuccess")
+//                    val command = arrayOf("-y", "-i", file.path, "-ss", TrimVideoUtils.stringForTime(mStartPosition), "-to", TrimVideoUtils.stringForTime(mEndPosition), "-c", "copy", outPutPath)
+                val command = arrayOf("-i", file.path, "-vf", "scale=iw/2:-1", outPutPath)
+                try {
+                    ff.execute(command, object : ExecuteBinaryResponseHandler() {
+                        override fun onSuccess(message: String?) {
+                            super.onSuccess(message)
+                            Log.e(TAG, "onSuccess: " + message!!)
+                        }
 
-            Log.e("SOURCE", file.path)
-            Log.e("DESTINATION", outPutPath)
+                        override fun onProgress(message: String?) {
+                            super.onProgress(message)
+                            mOnTrimVideoListener?.onError(message.toString())
+                            Log.e(TAG, "onProgress: " + message!!)
+                        }
 
-            val ff = FFmpeg.getInstance(context)
-            ff.loadBinary(object : FFmpegLoadBinaryResponseHandler {
-                override fun onFinish() {
-                    Log.e("FFmpegLoad", "onFinish")
+                        override fun onFailure(message: String?) {
+                            super.onFailure(message)
+                            mOnTrimVideoListener?.onError(message.toString())
+                            Log.e(TAG, "onFailure: " + message!!)
+                        }
+
+                        override fun onStart() {
+                            super.onStart()
+                            Log.e(TAG, "onStart: ")
+                        }
+
+                        override fun onFinish() {
+                            super.onFinish()
+                            mOnTrimVideoListener?.getResult(outputFileUri)
+                            Log.e(TAG, "onFinish: ")
+                        }
+                    })
+                } catch (e: FFmpegCommandAlreadyRunningException) {
+                    mOnTrimVideoListener?.onError(e.toString())
                 }
+            }
 
-                override fun onSuccess() {
-                    Log.e("FFmpegLoad", "onSuccess")
-                    val command = arrayOf("-y", "-i", file.path, "-ss", TrimVideoUtils.stringForTime(mStartPosition), "-to", TrimVideoUtils.stringForTime(mEndPosition), "-c", "copy", outPutPath)//{"-y", "-ss", "00:00:03", "-i", file.getPath(), "-t", "00:00:08", "-async", "1", outPutPath};  //-i movie.mp4 -ss 00:00:03 -t 00:00:08 -async 1 cut.mp4
-                    try {
-                        ff.execute(command, object : ExecuteBinaryResponseHandler() {
-                            override fun onSuccess(message: String?) {
-                                super.onSuccess(message)
-                                Log.d(TAG, "onSuccess: " + message!!)
-                            }
+            override fun onFailure() {
+                Log.e("FFmpegLoad", "onFailure")
+                mOnTrimVideoListener?.onError("Failed")
+            }
 
-                            override fun onProgress(message: String?) {
-                                super.onProgress(message)
-                                mOnTrimVideoListener?.onError(message.toString())
-                                Log.d(TAG, "onProgress: " + message!!)
-                            }
-
-                            override fun onFailure(message: String?) {
-                                super.onFailure(message)
-                                mOnTrimVideoListener?.onError(message.toString())
-                                Log.d(TAG, "onFailure: " + message!!)
-                            }
-
-                            override fun onStart() {
-                                super.onStart()
-                                Log.d(TAG, "onStart: ")
-                            }
-
-                            override fun onFinish() {
-                                super.onFinish()
-                                mOnTrimVideoListener?.getResult(outputFileUri)
-                                Log.d(TAG, "onFinish: ")
-                            }
-                        })
-                    } catch (e: FFmpegCommandAlreadyRunningException) {
-                        mOnTrimVideoListener?.onError(e.toString())
-                    }
-                }
-
-                override fun onFailure() {
-                    Log.e("FFmpegLoad", "onFailure")
-                    mOnTrimVideoListener?.onError("Failed")
-                }
-
-                override fun onStart() {
-                }
-            })
-            mOnTrimVideoListener?.onTrimStarted()
+            override fun onStart() {
+            }
+        })
+        mOnTrimVideoListener?.onTrimStarted()
 
 //            BackgroundExecutor.execute(
 //                    object : BackgroundExecutor.Task("", 0L, "") {
@@ -278,7 +277,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 //                        }
 //                    }
 //            )
-        }
     }
 
     private fun onClickVideoPlayPause() {
