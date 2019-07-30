@@ -208,7 +208,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             val root = File(destinationPath)
             root.mkdirs()
             val outputFileUri = Uri.fromFile(File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path.substring(mSrc.path.lastIndexOf("/") + 1)))
-            val outPutPath = RealPathUtil.getRealPathFromURI_API19(context, outputFileUri)
+            val outPutPath = RealPathUtil.realPathFromUriApi19(context, outputFileUri)
 
             Log.e("SOURCE", file.path)
             Log.e("DESTINATION", outPutPath)
@@ -424,7 +424,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
      * @param visible whether or not the videoInformation will be visible
      */
     fun setVideoInformationVisibility(visible: Boolean) {
-        timeText.visibility = if (visible) View.VISIBLE else View.GONE
+        timeFrame.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
     /**

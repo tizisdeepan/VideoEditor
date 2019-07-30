@@ -72,14 +72,8 @@ object TrimVideoUtils {
 
             for (i in 0 until track.sampleDurations.size) {
                 val delta = track.sampleDurations[i]
-
-
-                if (currentTime > lastTime && currentTime <= startTime1) {
-                    startSample1 = currentSample
-                }
-                if (currentTime > lastTime && currentTime <= endTime1) {
-                    endSample1 = currentSample
-                }
+                if (currentTime > lastTime && currentTime <= startTime1) startSample1 = currentSample
+                if (currentTime > lastTime && currentTime <= endTime1) endSample1 = currentSample
                 lastTime = currentTime
                 currentTime += delta.toDouble() / track.trackMetaData.timescale.toDouble()
                 currentSample++
@@ -115,7 +109,6 @@ object TrimVideoUtils {
             }
             currentTime += delta.toDouble() / track.trackMetaData.timescale.toDouble()
             currentSample++
-
         }
         var previous = 0.0
         for (timeOfSyncSample in timeOfSyncSamples) {

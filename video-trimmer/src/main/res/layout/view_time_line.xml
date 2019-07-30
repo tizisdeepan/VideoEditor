@@ -43,7 +43,7 @@
             android:orientation="vertical">
 
             <RelativeLayout
-                android:id="@+id/timeText"
+                android:id="@+id/timeFrame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone">
