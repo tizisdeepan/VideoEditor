@@ -87,30 +87,25 @@ class ProgressBarView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
     private fun updateBackgroundRect(index: Int, value: Float) {
-
-        if (mBackgroundRect == null) {
-            mBackgroundRect = Rect(0, 0, mViewWidth, mProgressHeight)
-        }
-
+        if (mBackgroundRect == null) mBackgroundRect = Rect(0, 0, mViewWidth, mProgressHeight)
         val newValue = (mViewWidth * value / 100).toInt()
-        if (index == 0) {
-            mBackgroundRect = Rect(newValue, mBackgroundRect!!.top, mBackgroundRect!!.right, mBackgroundRect!!.bottom)
+        mBackgroundRect = if (index == 0) {
+            Rect(newValue, mBackgroundRect!!.top, mBackgroundRect!!.right, mBackgroundRect!!.bottom)
         } else {
-            mBackgroundRect = Rect(mBackgroundRect!!.left, mBackgroundRect!!.top, newValue, mBackgroundRect!!.bottom)
+            Rect(mBackgroundRect!!.left, mBackgroundRect!!.top, newValue, mBackgroundRect!!.bottom)
         }
-
         updateProgress(0, 0, 0.0f)
     }
 
     override fun updateProgress(time: Int, max: Int, scale: Float) {
-
-        if (scale == 0f) {
-            mProgressRect = Rect(0, mBackgroundRect!!.top, 0, mBackgroundRect!!.bottom)
-        } else {
-            val newValue = (mViewWidth * scale / 100).toInt()
-            mProgressRect = Rect(mBackgroundRect!!.left, mBackgroundRect!!.top, newValue, mBackgroundRect!!.bottom)
+        if (mBackgroundRect != null) {
+            mProgressRect = if (scale == 0f) {
+                Rect(0, mBackgroundRect!!.top, 0, mBackgroundRect!!.bottom)
+            } else {
+                val newValue = (mViewWidth * scale / 100).toInt()
+                Rect(mBackgroundRect!!.left, mBackgroundRect!!.top, newValue, mBackgroundRect!!.bottom)
+            }
         }
-
         invalidate()
     }
 }

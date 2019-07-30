@@ -33,7 +33,8 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
             mProgressDialog.setCancelable(false)
             mProgressDialog.setCanceledOnTouchOutside(false)
             mProgressDialog.setMessage(getString(R.string.trimming_progress))
-            videoTrimmer.setMaxDuration(140)
+//            videoTrimmer.setMaxDuration(180)
+            videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMIBOLD])
             videoTrimmer.setOnTrimVideoListener(this)
             videoTrimmer.setOnVideoListener(this)
             videoTrimmer.setVideoURI(Uri.parse(path))
@@ -59,13 +60,16 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
     override fun getResult(uri: Uri) {
         RunOnUiThread(this@TrimmerActivity).safely {
             RunOnUiThread(this@TrimmerActivity).safely {
-                Toast.makeText(this@TrimmerActivity, "getResult", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@TrimmerActivity, getString(R.string.video_saved_at, uri.path), Toast.LENGTH_SHORT).show()
             }
-            runOnUiThread { Toast.makeText(this@TrimmerActivity, getString(R.string.video_saved_at, uri.path), Toast.LENGTH_SHORT).show() }
-            val intent = Intent(Intent.ACTION_VIEW, uri)
-            intent.setDataAndType(uri, "video/*")
-            startActivity(intent)
-            finish()
+//            val values = ContentValues()
+//            values.put(MediaStore.Video.Media.DATA, uri.path)
+//            val id = ContentUris.parseId(contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values))
+            sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
+//            val intent = Intent(Intent.ACTION_VIEW, uri)
+//            intent.setDataAndType(uri, "video/*")
+//            startActivity(intent)
+//            finish()
         }
     }
 

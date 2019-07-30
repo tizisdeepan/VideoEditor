@@ -1,6 +1,7 @@
 package com.video.trimmer
 
 import android.content.Context
+import android.graphics.Typeface
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
@@ -42,7 +43,8 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     private lateinit var mSrc: Uri
     private var mFinalPath: String? = null
 
-    private var mMaxDuration: Int = 0
+    private var mMaxDuration: Int = -1
+    private var mMinDuration: Int = -1
     private var mListeners: ArrayList<OnProgressVideoListener> = ArrayList()
 
     private var mOnTrimVideoListener: OnTrimVideoListener? = null
@@ -205,10 +207,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
             val root = File(destinationPath)
             root.mkdirs()
-            val fname = "t_" + mSrc.path.substring(mSrc.path.lastIndexOf("/") + 1)
-            val sdImageMainDirectory = File(root, fname)
-            val outputFileUri = Uri.fromFile(sdImageMainDirectory)
-
+            val outputFileUri = Uri.fromFile(File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path.substring(mSrc.path.lastIndexOf("/") + 1)))
             val outPutPath = RealPathUtil.getRealPathFromURI_API19(context, outputFileUri)
 
             Log.e("SOURCE", file.path)
@@ -222,7 +221,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
                 override fun onSuccess() {
                     Log.e("FFmpegLoad", "onSuccess")
-                    val command = arrayOf("-y", "-i", file.path, "-s", "640x480", "-ss", TrimVideoUtils.stringForTime(mStartPosition), "-to", TrimVideoUtils.stringForTime(mEndPosition), "-c", "copy", outPutPath)//{"-y", "-ss", "00:00:03", "-i", file.getPath(), "-t", "00:00:08", "-async", "1", outPutPath};  //-i movie.mp4 -ss 00:00:03 -t 00:00:08 -async 1 cut.mp4
+                    val command = arrayOf("-y", "-i", file.path, "-ss", TrimVideoUtils.stringForTime(mStartPosition), "-to", TrimVideoUtils.stringForTime(mEndPosition), "-c", "copy", outPutPath)//{"-y", "-ss", "00:00:03", "-i", file.getPath(), "-t", "00:00:08", "-async", "1", outPutPath};  //-i movie.mp4 -ss 00:00:03 -t 00:00:08 -async 1 cut.mp4
                     try {
                         ff.execute(command, object : ExecuteBinaryResponseHandler() {
                             override fun onSuccess(message: String?) {
@@ -333,14 +332,26 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun setSeekBarPosition() {
-        if (mDuration >= mMaxDuration) {
-            mStartPosition = mDuration / 2 - mMaxDuration / 2
-            mEndPosition = mDuration / 2 + mMaxDuration / 2
-            timeLineBar.setThumbValue(0, (mStartPosition * 100 / mDuration).toFloat())
-            timeLineBar.setThumbValue(1, (mEndPosition * 100 / mDuration).toFloat())
-        } else {
-            mStartPosition = 0
-            mEndPosition = mDuration
+        when {
+            mDuration >= mMaxDuration && mMaxDuration != -1 -> {
+                mStartPosition = mDuration / 2 - mMaxDuration / 2
+                mEndPosition = mDuration / 2 + mMaxDuration / 2
+                Log.e("mDuration", mDuration.toString())
+                Log.e("mStartPosition", mStartPosition.toString())
+                Log.e("mEndPosition", mEndPosition.toString())
+                timeLineBar.setThumbValue(0, (mStartPosition * 100 / mDuration).toFloat())
+                timeLineBar.setThumbValue(1, (mEndPosition * 100 / mDuration).toFloat())
+            }
+            mDuration <= mMinDuration && mMinDuration != -1 -> {
+                mStartPosition = mDuration / 2 - mMinDuration / 2
+                mEndPosition = mDuration / 2 + mMinDuration / 2
+                timeLineBar.setThumbValue(0, (mStartPosition * 100 / mDuration).toFloat())
+                timeLineBar.setThumbValue(1, (mEndPosition * 100 / mDuration).toFloat())
+            }
+            else -> {
+                mStartPosition = 0
+                mEndPosition = mDuration
+            }
         }
         video_loader.seekTo(mStartPosition)
         mTimeVideo = mDuration
@@ -452,6 +463,10 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         mMaxDuration = maxDuration * 1000
     }
 
+    fun setMinDuration(minDuration: Int) {
+        mMinDuration = minDuration * 1000
+    }
+
     /**
      * Sets the uri of the video to be trimmer
      *
@@ -462,6 +477,14 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         video_loader.setVideoURI(mSrc)
         video_loader.requestFocus()
         timeLineView.setVideo(mSrc)
+    }
+
+    fun setTextTimeSelectionTypeface(tf: Typeface?) {
+        if (tf != null) textTimeSelection.typeface = tf
+    }
+
+    fun setTextTimeTypeface(tf: Typeface?) {
+        if (tf != null) textTime.typeface = tf
     }
 
     private class MessageHandler internal constructor(view: VideoTrimmer) : Handler() {
