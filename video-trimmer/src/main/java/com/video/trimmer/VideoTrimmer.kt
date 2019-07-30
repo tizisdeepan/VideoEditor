@@ -219,8 +219,8 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
             override fun onSuccess() {
                 Log.e("FFmpegLoad", "onSuccess")
-//                    val command = arrayOf("-y", "-i", file.path, "-ss", TrimVideoUtils.stringForTime(mStartPosition), "-to", TrimVideoUtils.stringForTime(mEndPosition), "-c", "copy", outPutPath)
-                val command = arrayOf("-i", file.path, "-vf", "scale=iw/2:-1", outPutPath)
+                    val command = arrayOf("-y", "-i", file.path, "-ss", TrimVideoUtils.stringForTime(mStartPosition), "-to", TrimVideoUtils.stringForTime(mEndPosition), "-c", "copy", outPutPath)
+//                val command = arrayOf("-i", file.path, "-vf", "scale=iw/2:-1", outPutPath)
                 try {
                     ff.execute(command, object : ExecuteBinaryResponseHandler() {
                         override fun onSuccess(message: String?) {
