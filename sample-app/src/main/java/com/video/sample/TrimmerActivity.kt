@@ -19,8 +19,6 @@ import java.io.File
 
 class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListener {
 
-    lateinit var mProgressDialog: ProgressDialog
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trimmer)
@@ -29,11 +27,6 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
             val extraIntent = intent
             var path = ""
             if (extraIntent != null) path = extraIntent.getStringExtra(MainActivity.EXTRA_VIDEO_PATH)
-            mProgressDialog = ProgressDialog(this)
-            mProgressDialog.setCancelable(false)
-            mProgressDialog.setCanceledOnTouchOutside(false)
-            mProgressDialog.setMessage(getString(R.string.trimming_progress))
-//            videoTrimmer.setMaxDuration(180)
             videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMIBOLD])
             videoTrimmer.setOnTrimVideoListener(this)
             videoTrimmer.setOnVideoListener(this)
@@ -53,7 +46,7 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
 
     override fun onTrimStarted() {
         RunOnUiThread(this@TrimmerActivity).safely {
-            Toast.makeText(this@TrimmerActivity, "onTrimStarted", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@TrimmerActivity, "Started Trimming", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -75,7 +68,6 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
 
     override fun cancelAction() {
         RunOnUiThread(this@TrimmerActivity).safely {
-            Toast.makeText(this@TrimmerActivity, "cancelAction", Toast.LENGTH_SHORT).show()
             videoTrimmer.destroy()
             finish()
         }
@@ -83,9 +75,7 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
 
     override fun onError(message: String) {
         RunOnUiThread(this@TrimmerActivity).safely {
-            mProgressDialog.cancel()
             Log.e("ERROR", message)
-//            Toast.makeText(this@TrimmerActivity, message, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -95,20 +85,19 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
         }
     }
 
-    private val PERMISSIONS_REQUEST_CODE = 101
     lateinit var dothis: () -> Unit
     private fun setupPermissions(doSomething: () -> Unit) {
         val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         val readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
         dothis = doSomething
         if (writePermission != PackageManager.PERMISSION_GRANTED && readPermission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), PERMISSIONS_REQUEST_CODE)
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), 101)
         } else dothis()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
-            PERMISSIONS_REQUEST_CODE -> {
+            101 -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     PermissionsDialog(this@TrimmerActivity, "To continue, give Zoho Social access to your Photos.").show()
                 } else dothis()

@@ -6,7 +6,7 @@
     <string name="permission_title_rationale" translatable="false">Permission needed</string>
     <string name="permission_read_storage_rationale" translatable="false">Storage read permission is needed to pick files.</string>
     <string name="toast_cannot_retrieve_selected_video" translatable="false">Cannot retrieve selected video</string>
-    <string name="video_saved_at" translatable="false">Video saves at : $%1s</string>
+    <string name="video_saved_at" translatable="false">Video saved at : $%1s</string>
     <string name="title_description" translatable="false">A library with UI and mechanisms to trim local videos on Android applications</string>
     <string name="description_app" translatable="false">
             # Provide UI to preview and select start/end of the video to trim
