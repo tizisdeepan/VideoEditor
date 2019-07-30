@@ -43,10 +43,10 @@ class ProgressBarView @JvmOverloads constructor(context: Context, attrs: Attribu
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
         val minW = paddingLeft + paddingRight + suggestedMinimumWidth
-        mViewWidth = View.resolveSizeAndState(minW, widthMeasureSpec, 1)
+        mViewWidth = resolveSizeAndState(minW, widthMeasureSpec, 1)
 
         val minH = paddingBottom + paddingTop + mProgressHeight
-        val viewHeight = View.resolveSizeAndState(minH, heightMeasureSpec, 1)
+        val viewHeight = resolveSizeAndState(minH, heightMeasureSpec, 1)
 
         setMeasuredDimension(mViewWidth, viewHeight)
     }
