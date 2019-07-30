@@ -10,6 +10,7 @@ import android.os.Environment
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.Toast
 import com.video.trimmer.interfaces.OnTrimVideoListener
 import com.video.trimmer.interfaces.OnVideoListener
@@ -79,6 +80,7 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
     override fun onError(message: String) {
         RunOnUiThread(this@TrimmerActivity).safely {
             mProgressDialog.cancel()
+            Log.e("ERROR", message)
 //            Toast.makeText(this@TrimmerActivity, message, Toast.LENGTH_SHORT).show()
         }
     }

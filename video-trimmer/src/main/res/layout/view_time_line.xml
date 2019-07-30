@@ -72,10 +72,27 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp">
 
+                <SeekBar
+                    android:id="@+id/handlerTop"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:max="1000"
+                    android:progressDrawable="@android:color/transparent"
+                    android:secondaryProgress="0"
+                    android:thumb="@drawable/apptheme_text_select_handle_middle" />
+
+                <com.video.trimmer.view.ProgressBarView
+                    android:id="@+id/timeVideoView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/handlerTop"/>
+
                 <com.video.trimmer.view.TimeLineView
                     android:id="@+id/timeLineView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/timeVideoView" />
 
                 <com.video.trimmer.view.RangeSeekBarView
                     android:id="@+id/timeLineBar"

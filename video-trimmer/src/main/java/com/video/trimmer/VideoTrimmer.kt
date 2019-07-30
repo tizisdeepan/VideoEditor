@@ -39,11 +39,11 @@ import java.util.*
 
 class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
 
-    lateinit var mSrc: Uri
+    private lateinit var mSrc: Uri
     private var mFinalPath: String? = null
 
     private var mMaxDuration: Int = 0
-    private var mListeners: MutableList<OnProgressVideoListener>? = null
+    private var mListeners: ArrayList<OnProgressVideoListener> = ArrayList()
 
     private var mOnTrimVideoListener: OnTrimVideoListener? = null
     private var mOnVideoListener: OnVideoListener? = null
@@ -51,9 +51,8 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     private var mDuration = 0
     private var mTimeVideo = 0
     private var mStartPosition = 0
-    private var mEndPosition = 0
 
-    private var mOriginSizeFile: Long = 0
+    private var mEndPosition = 0
     private var mResetSeekBar = true
     private val mMessageHandler = MessageHandler(this)
 
@@ -83,11 +82,12 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     private fun setUpListeners() {
         mListeners = ArrayList()
-        mListeners?.add(object : OnProgressVideoListener {
+        mListeners.add(object : OnProgressVideoListener {
             override fun updateProgress(time: Int, max: Int, scale: Float) {
                 updateVideoProgress(time)
             }
         })
+        mListeners.add(timeVideoView)
 
         val gestureDetector = GestureDetector(context,
                 object : GestureDetector.SimpleOnGestureListener() {
@@ -107,6 +107,20 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             gestureDetector.onTouchEvent(event)
             true
         }
+
+        handlerTop.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                onPlayerIndicatorSeekChanged(progress, fromUser)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                onPlayerIndicatorSeekStart()
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                onPlayerIndicatorSeekStop(seekBar)
+            }
+        })
 
         timeLineBar.addOnRangeSeekBarListener(object : OnRangeSeekBarListener {
             override fun onCreate(rangeSeekBarView: RangeSeekBarView, index: Int, value: Float) {
@@ -129,6 +143,42 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         video_loader.setOnCompletionListener { onVideoCompleted() }
     }
 
+    private fun onPlayerIndicatorSeekChanged(progress: Int, fromUser: Boolean) {
+        var duration = (mDuration * progress / 1000L).toInt()
+        if (fromUser) {
+            if (duration < mStartPosition) {
+                setProgressBarPosition(mStartPosition)
+                duration = mStartPosition
+            } else if (duration > mEndPosition) {
+                setProgressBarPosition(mEndPosition)
+                duration = mEndPosition
+            }
+            setTimeVideo(duration)
+        }
+    }
+
+    private fun onPlayerIndicatorSeekStart() {
+        mMessageHandler.removeMessages(SHOW_PROGRESS)
+        video_loader.pause()
+        icon_video_play.visibility = View.VISIBLE
+        notifyProgressUpdate(false)
+    }
+
+    private fun onPlayerIndicatorSeekStop(seekBar: SeekBar) {
+        mMessageHandler.removeMessages(SHOW_PROGRESS)
+        video_loader.pause()
+        icon_video_play.visibility = View.VISIBLE
+
+        val duration = (mDuration * seekBar.progress / 1000L).toInt()
+        video_loader.seekTo(duration)
+        setTimeVideo(duration)
+        notifyProgressUpdate(false)
+    }
+
+    private fun setProgressBarPosition(position: Int) {
+        if (mDuration > 0) handlerTop.progress = (1000L * position / mDuration).toInt()
+    }
+
     private fun setUpMargins() {
         val marge = timeLineBar.thumbs[0].widthBitmap
         val lp = timeLineView.layoutParams as RelativeLayout.LayoutParams
@@ -137,9 +187,8 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     fun onSaveClicked() {
-        if (mStartPosition <= 0 && mEndPosition >= mDuration) {
-            mOnTrimVideoListener?.getResult(mSrc)
-        } else {
+        if (mStartPosition <= 0 && mEndPosition >= mDuration) mOnTrimVideoListener?.getResult(mSrc)
+        else {
             mOnTrimVideoListener?.onTrimStarted()
             icon_video_play.visibility = View.VISIBLE
             video_loader.pause()
@@ -166,17 +215,17 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             Log.e("SOURCE", file.path)
             Log.e("DESTINATION", outPutPath)
 
-            val ffmpeg = FFmpeg.getInstance(context)
-            ffmpeg.loadBinary(object : FFmpegLoadBinaryResponseHandler {
+            val ff = FFmpeg.getInstance(context)
+            ff.loadBinary(object : FFmpegLoadBinaryResponseHandler {
                 override fun onFinish() {
                     Log.e("FFmpegLoad", "onFinish")
                 }
 
                 override fun onSuccess() {
                     Log.e("FFmpegLoad", "onSuccess")
-                    val command = arrayOf("-y", "-i", file.path, "-ss", TrimVideoUtils.stringForTime(mStartPosition), "-to", TrimVideoUtils.stringForTime(mEndPosition), "-c", "copy", outPutPath)//{"-y", "-ss", "00:00:03", "-i", file.getPath(), "-t", "00:00:08", "-async", "1", outPutPath};  //-i movie.mp4 -ss 00:00:03 -t 00:00:08 -async 1 cut.mp4
+                    val command = arrayOf("-y", "-i", file.path, "-s", "640x480", "-ss", TrimVideoUtils.stringForTime(mStartPosition), "-to", TrimVideoUtils.stringForTime(mEndPosition), "-c", "copy", outPutPath)//{"-y", "-ss", "00:00:03", "-i", file.getPath(), "-t", "00:00:08", "-async", "1", outPutPath};  //-i movie.mp4 -ss 00:00:03 -t 00:00:08 -async 1 cut.mp4
                     try {
-                        ffmpeg.execute(command, object : ExecuteBinaryResponseHandler() {
+                        ff.execute(command, object : ExecuteBinaryResponseHandler() {
                             override fun onSuccess(message: String?) {
                                 super.onSuccess(message)
                                 Log.d(TAG, "onSuccess: " + message!!)
@@ -350,11 +399,11 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
         val position = video_loader.currentPosition
         if (all) {
-            for (item in mListeners!!) {
+            for (item in mListeners) {
                 item.updateProgress(position, mDuration, (position * 100 / mDuration).toFloat())
             }
         } else {
-            mListeners!![1].updateProgress(position, mDuration, (position * 100 / mDuration).toFloat())
+            mListeners[0].updateProgress(position, mDuration, (position * 100 / mDuration).toFloat())
         }
     }
 
@@ -438,7 +487,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         override fun handleMessage(msg: Message) {
             val view = mView.get()
             if (view == null || view.video_loader == null) return
-
             view.notifyProgressUpdate(true)
             if (view.video_loader.isPlaying) sendEmptyMessageDelayed(0, 10)
         }
@@ -446,7 +494,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     companion object {
         private val TAG = VideoTrimmer::class.java.simpleName
-        private val MIN_TIME_FRAME = 1000
-        private val SHOW_PROGRESS = 2
+        private const val MIN_TIME_FRAME = 1000
+        private const val SHOW_PROGRESS = 2
     }
 }
