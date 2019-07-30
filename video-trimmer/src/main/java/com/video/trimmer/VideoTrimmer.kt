@@ -139,7 +139,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         })
 
         video_loader.setOnPreparedListener { mp -> onVideoPrepared(mp) }
-
         video_loader.setOnCompletionListener { onVideoCompleted() }
     }
 
@@ -267,9 +266,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                 override fun onStart() {
                 }
             })
-
-
-            //notify that video trimming started
             mOnTrimVideoListener?.onTrimStarted()
 
 //            BackgroundExecutor.execute(
@@ -293,12 +289,10 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             video_loader.pause()
         } else {
             icon_video_play.visibility = View.GONE
-
             if (mResetSeekBar) {
                 mResetSeekBar = false
                 video_loader.seekTo(mStartPosition)
             }
-
             mMessageHandler.sendEmptyMessage(SHOW_PROGRESS)
             video_loader.start()
         }
@@ -310,8 +304,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun onVideoPrepared(mp: MediaPlayer) {
-        // Adjust the size of the video
-        // so it fits on the screen
         val videoWidth = mp.videoWidth
         val videoHeight = mp.videoHeight
         val videoProportion = videoWidth.toFloat() / videoHeight.toFloat()
@@ -344,17 +336,13 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         if (mDuration >= mMaxDuration) {
             mStartPosition = mDuration / 2 - mMaxDuration / 2
             mEndPosition = mDuration / 2 + mMaxDuration / 2
-
             timeLineBar.setThumbValue(0, (mStartPosition * 100 / mDuration).toFloat())
             timeLineBar.setThumbValue(1, (mEndPosition * 100 / mDuration).toFloat())
-
         } else {
             mStartPosition = 0
             mEndPosition = mDuration
         }
-
         video_loader.seekTo(mStartPosition)
-
         mTimeVideo = mDuration
         timeLineBar.initMaxWidth()
     }
@@ -379,7 +367,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                 mEndPosition = (mDuration * value / 100L).toInt()
             }
         }
-
         setTimeFrames()
         mTimeVideo = mEndPosition - mStartPosition
     }
@@ -408,10 +395,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun updateVideoProgress(time: Int) {
-        if (video_loader == null) {
-            return
-        }
-
+        if (video_loader == null) return
         if (time >= mEndPosition) {
             mMessageHandler.removeMessages(SHOW_PROGRESS)
             video_loader.pause()
@@ -481,9 +465,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private class MessageHandler internal constructor(view: VideoTrimmer) : Handler() {
-
         private val mView: WeakReference<VideoTrimmer> = WeakReference(view)
-
         override fun handleMessage(msg: Message) {
             val view = mView.get()
             if (view == null || view.video_loader == null) return
