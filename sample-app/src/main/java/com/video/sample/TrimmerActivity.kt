@@ -72,6 +72,7 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
         cursor?.close()
         return videoId
     }
+    
 
     override fun cancelAction() {
         RunOnUiThread(this).safely {
