@@ -1,5 +1,6 @@
 package com.video.trimmer.view
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -16,7 +17,7 @@ class RangeSeekBarView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     private var mHeightTimeLine = 0
     lateinit var thumbs: List<Thumb>
-    var mListeners: MutableList<OnRangeSeekBarListener>? = null
+    private var mListeners: MutableList<OnRangeSeekBarListener>? = null
     private var mMaxWidth = 0f
     private var mThumbWidth = 0f
     private var mThumbHeight = 0f
@@ -96,12 +97,12 @@ class RangeSeekBarView @JvmOverloads constructor(context: Context, attrs: Attrib
         drawThumbs(canvas)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(ev: MotionEvent): Boolean {
         val mThumb: Thumb
         val mThumb2: Thumb
         val coordinate = ev.x
-        val action = ev.action
-        when (action) {
+        when (ev.action) {
             MotionEvent.ACTION_DOWN -> {
                 currentThumb = getClosestThumb(coordinate)
                 if (currentThumb == -1) return false
@@ -202,7 +203,7 @@ class RangeSeekBarView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     private fun calculateThumbValue(index: Int) {
-        if (index < thumbs.size && !thumbs.isEmpty()) {
+        if (index < thumbs.size && thumbs.isNotEmpty()) {
             val th = thumbs[index]
             th.value = pixelToScale(index, th.pos)
             onSeek(this, index, th.value)
@@ -210,7 +211,7 @@ class RangeSeekBarView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     private fun calculateThumbPos(index: Int) {
-        if (index < thumbs.size && !thumbs.isEmpty()) {
+        if (index < thumbs.size && thumbs.isNotEmpty()) {
             val th = thumbs[index]
             th.pos = scaleToPixel(index, th.value)
         }
@@ -245,7 +246,6 @@ class RangeSeekBarView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     private fun drawShadow(canvas: Canvas) {
         if (thumbs.isNotEmpty()) {
-
             for (th in thumbs) {
                 if (th.index == 0) {
                     val x = th.pos + paddingLeft
@@ -265,7 +265,6 @@ class RangeSeekBarView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     private fun drawThumbs(canvas: Canvas) {
-
         if (thumbs.isNotEmpty()) {
             for (th in thumbs) {
                 if (th.index == 0) {
@@ -316,9 +315,5 @@ class RangeSeekBarView @JvmOverloads constructor(context: Context, attrs: Attrib
                 item.onSeekStop(rangeSeekBarView, index, value)
             }
         }
-    }
-
-    companion object {
-        private val TAG = RangeSeekBarView::class.java.simpleName
     }
 }

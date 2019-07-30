@@ -33,14 +33,11 @@ class Thumb private constructor() {
     }
 
     companion object {
-
-        val LEFT = 0
-        val RIGHT = 1
+        const val LEFT = 0
+        const val RIGHT = 1
 
         fun initThumbs(resources: Resources): List<Thumb> {
-
             val thumbs = Vector<Thumb>()
-
             for (i in 0..1) {
                 val th = Thumb()
                 th.index = i
@@ -55,24 +52,16 @@ class Thumb private constructor() {
                 }
                 thumbs.add(th)
             }
-
             return thumbs
         }
 
-        fun getWidthBitmap(thumbs: List<Thumb>): Int {
-            return thumbs[0].widthBitmap
-        }
+        fun getWidthBitmap(thumbs: List<Thumb>): Int = thumbs[0].widthBitmap
 
-        fun getHeightBitmap(thumbs: List<Thumb>): Int {
-            return thumbs[0].heightBitmap
-        }
+        fun getHeightBitmap(thumbs: List<Thumb>): Int = thumbs[0].heightBitmap
 
         fun drawableToBitmap(drawable: Drawable): Bitmap {
-            var bitmap: Bitmap? = null
-            if (drawable is BitmapDrawable) {
-                if (drawable.bitmap != null) return drawable.bitmap
-            }
-            bitmap = if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+            if (drawable is BitmapDrawable && drawable.bitmap != null) return drawable.bitmap
+            val bitmap = if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
             else Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
             if (bitmap != null) {
                 val canvas = Canvas(bitmap)
