@@ -80,7 +80,6 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
         }
     }
 
-
     override fun onError(message: String) {
         Log.e("ERROR", message)
     }
