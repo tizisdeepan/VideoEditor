@@ -1,7 +1,6 @@
 package com.video.sample
 
 import android.Manifest
-import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -16,6 +15,9 @@ import com.video.trimmer.interfaces.OnTrimVideoListener
 import com.video.trimmer.interfaces.OnVideoListener
 import kotlinx.android.synthetic.main.activity_trimmer.*
 import java.io.File
+import android.provider.MediaStore
+import android.content.ContentResolver
+
 
 class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListener {
 
@@ -46,43 +48,45 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
     }
 
     override fun onTrimStarted() {
-        RunOnUiThread(this@TrimmerActivity).safely {
-            Toast.makeText(this@TrimmerActivity, "Started Trimming", Toast.LENGTH_SHORT).show()
+        RunOnUiThread(this).safely {
+            Toast.makeText(this, "Started Trimming", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun getResult(uri: Uri) {
-        RunOnUiThread(this@TrimmerActivity).safely {
-            RunOnUiThread(this@TrimmerActivity).safely {
-                Toast.makeText(this@TrimmerActivity, getString(R.string.video_saved_at, uri.path), Toast.LENGTH_SHORT).show()
-            }
-//            val values = ContentValues()
-//            values.put(MediaStore.Video.Media.DATA, uri.path)
-//            val id = ContentUris.parseId(contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values))
+        RunOnUiThread(this).safely {
+            Toast.makeText(this, getString(R.string.video_saved_at, uri.path), Toast.LENGTH_SHORT).show()
             sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
-//            val intent = Intent(Intent.ACTION_VIEW, uri)
-//            intent.setDataAndType(uri, "video/*")
-//            startActivity(intent)
-//            finish()
+            val id = getVideoIdFromFilePath(uri.path)
+            Log.e("VIDEO ID", id.toString())
         }
     }
 
+    private fun getVideoIdFromFilePath(filePath: String?): Long? {
+        val videosUri = MediaStore.Video.Media.getContentUri("internal")
+        val projection = arrayOf(MediaStore.Video.VideoColumns._ID)
+        val cursor = contentResolver.query(videosUri, projection, MediaStore.Video.VideoColumns.DATA + " LIKE ?", arrayOf(filePath), null)
+        cursor?.moveToFirst()
+        val columnIndex = cursor?.getColumnIndex(projection[0])
+        val videoId = if (columnIndex != null) cursor.getLong(columnIndex) else null
+        cursor?.close()
+        return videoId
+    }
+
     override fun cancelAction() {
-        RunOnUiThread(this@TrimmerActivity).safely {
+        RunOnUiThread(this).safely {
             videoTrimmer.destroy()
             finish()
         }
     }
 
     override fun onError(message: String) {
-        RunOnUiThread(this@TrimmerActivity).safely {
-            Log.e("ERROR", message)
-        }
+        Log.e("ERROR", message)
     }
 
     override fun onVideoPrepared() {
-        RunOnUiThread(this@TrimmerActivity).safely {
-            Toast.makeText(this@TrimmerActivity, "onVideoPrepared", Toast.LENGTH_SHORT).show()
+        RunOnUiThread(this).safely {
+            Toast.makeText(this, "onVideoPrepared", Toast.LENGTH_SHORT).show()
         }
     }
 
