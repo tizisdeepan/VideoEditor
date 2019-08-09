@@ -1,7 +1,8 @@
 package com.video.sample
 
 import android.Manifest
-import android.content.Intent
+import android.content.ContentUris
+import android.content.ContentValues
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -16,7 +17,6 @@ import com.video.trimmer.interfaces.OnTrimVideoListener
 import com.video.trimmer.interfaces.OnVideoListener
 import kotlinx.android.synthetic.main.activity_trimmer.*
 import java.io.File
-import android.content.ContentResolver
 
 
 class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListener {
@@ -55,25 +55,16 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
 
     override fun getResult(uri: Uri) {
         RunOnUiThread(this).safely {
-            Toast.makeText(this, getString(R.string.video_saved_at, uri.path), Toast.LENGTH_SHORT).show()
-            sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
-//            val id = getVideoIdFromFilePath(uri.path)
-//            Log.e("VIDEO ID", id.toString())
+            RunOnUiThread(this).safely {
+                Toast.makeText(this, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
+            }
+//            val id = ContentUris.parseId(getImageContentUri(File(uri.path)))
+            val values = ContentValues()
+            values.put(MediaStore.Video.Media.DATA, uri.path)
+            values.put(MediaStore.Video.VideoColumns.DURATION, 2000)
+            val id = ContentUris.parseId(contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values))
+            Log.e("VIDEO ID", id.toString())
         }
-    }
-
-    private fun getVideoIdFromFilePath(filePath: String): Long? {
-        val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        val selection = MediaStore.Video.Media.DATA
-        val selectionArgs = arrayOf(filePath)
-        val projection = arrayOf(MediaStore.Audio.Media._ID)
-        val sortOrder = MediaStore.Video.Media.TITLE + " ASC"
-        val cursor = contentResolver.query(uri, projection, "$selection=?", selectionArgs, sortOrder)
-        cursor?.moveToFirst()
-        val columnIndex = cursor?.getColumnIndex(projection[0])
-        val videoId = if (columnIndex != null) cursor.getLong(columnIndex) else null
-        cursor?.close()
-        return videoId
     }
 
     override fun cancelAction() {
