@@ -198,7 +198,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
         val root = File(destinationPath)
         root.mkdirs()
-        val outputFileUri = Uri.fromFile(File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path.substring(mSrc.path.lastIndexOf("/") + 1)))
+        val outputFileUri = Uri.fromFile(File(root, "t_${Calendar.getInstance().timeInMillis}_" + file.nameWithoutExtension + ".mp4"))
         val outPutPath = RealPathUtil.realPathFromUriApi19(context, outputFileUri)
                 ?: File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path.substring(mSrc.path.lastIndexOf("/") + 1)).absolutePath
         Log.e("SOURCE", file.path)
