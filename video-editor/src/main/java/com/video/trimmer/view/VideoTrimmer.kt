@@ -1,4 +1,4 @@
-package com.video.trimmer
+package com.video.trimmer.view
 
 import android.content.Context
 import android.graphics.Typeface
@@ -18,13 +18,12 @@ import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import android.widget.SeekBar
 import android.widget.VideoView
+import com.video.trimmer.R
 import com.video.trimmer.interfaces.OnProgressVideoListener
 import com.video.trimmer.interfaces.OnRangeSeekBarListener
 import com.video.trimmer.interfaces.OnTrimVideoListener
 import com.video.trimmer.interfaces.OnVideoListener
 import com.video.trimmer.utils.*
-import com.video.trimmer.view.RangeSeekBarView
-import com.video.trimmer.view.Thumb
 import kotlinx.android.synthetic.main.view_time_line.view.*
 import java.io.File
 import java.lang.ref.WeakReference

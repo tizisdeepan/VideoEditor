@@ -41,7 +41,7 @@
 
     </RelativeLayout>
 
-    <com.video.trimmer.VideoTrimmer
+    <com.video.trimmer.view.VideoTrimmer
         android:id="@+id/videoTrimmer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
