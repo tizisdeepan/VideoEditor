@@ -19,25 +19,19 @@ import android.widget.RelativeLayout
 import android.widget.SeekBar
 import android.widget.VideoView
 import com.video.trimmer.interfaces.OnProgressVideoListener
-import com.video.trimmer.interfaces.OnRangeSeekBarListener
 import com.video.trimmer.interfaces.OnTrimVideoListener
 import com.video.trimmer.interfaces.OnVideoListener
 import com.video.trimmer.utils.*
-import com.video.trimmer.view.RangeSeekBarView
 import com.video.trimmer.view.Thumb
-import kotlinx.android.synthetic.main.view_time_line.view.*
+import kotlinx.android.synthetic.main.view_cropper.view.*
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.*
 
-
-class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
+class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
 
     private lateinit var mSrc: Uri
     private var mFinalPath: String? = null
-
-    private var mMaxDuration: Int = -1
-    private var mMinDuration: Int = -1
     private var mListeners: ArrayList<OnProgressVideoListener> = ArrayList()
 
     private var mOnTrimVideoListener: OnTrimVideoListener? = null
@@ -70,7 +64,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun init(context: Context) {
-        LayoutInflater.from(context).inflate(R.layout.view_time_line, this, true)
+        LayoutInflater.from(context).inflate(R.layout.view_cropper, this, true)
         setUpListeners()
         setUpMargins()
     }
@@ -117,22 +111,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             }
         })
 
-        timeLineBar.addOnRangeSeekBarListener(object : OnRangeSeekBarListener {
-            override fun onCreate(rangeSeekBarView: RangeSeekBarView, index: Int, value: Float) {
-            }
-
-            override fun onSeek(rangeSeekBarView: RangeSeekBarView, index: Int, value: Float) {
-                onSeekThumbs(index, value)
-            }
-
-            override fun onSeekStart(rangeSeekBarView: RangeSeekBarView, index: Int, value: Float) {
-            }
-
-            override fun onSeekStop(rangeSeekBarView: RangeSeekBarView, index: Int, value: Float) {
-                onStopSeekThumbs()
-            }
-        })
-
         video_loader.setOnPreparedListener { mp -> onVideoPrepared(mp) }
         video_loader.setOnCompletionListener { onVideoCompleted() }
     }
@@ -174,9 +152,8 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun setUpMargins() {
-        val marge = timeLineBar.thumbs[0].widthBitmap
         val lp = timeLineView.layoutParams as RelativeLayout.LayoutParams
-        lp.setMargins(marge, 0, marge, 0)
+        lp.setMargins(0, 0, 0, 0)
         timeLineView.layoutParams = lp
     }
 
@@ -257,30 +234,8 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun setSeekBarPosition() {
-        when {
-            mDuration >= mMaxDuration && mMaxDuration != -1 -> {
-                mStartPosition = mDuration / 2 - mMaxDuration / 2
-                mEndPosition = mDuration / 2 + mMaxDuration / 2
-                Log.e("mDuration", mDuration.toString())
-                Log.e("mStartPosition", mStartPosition.toString())
-                Log.e("mEndPosition", mEndPosition.toString())
-                timeLineBar.setThumbValue(0, (mStartPosition * 100 / mDuration).toFloat())
-                timeLineBar.setThumbValue(1, (mEndPosition * 100 / mDuration).toFloat())
-            }
-            mDuration <= mMinDuration && mMinDuration != -1 -> {
-                mStartPosition = mDuration / 2 - mMinDuration / 2
-                mEndPosition = mDuration / 2 + mMinDuration / 2
-                timeLineBar.setThumbValue(0, (mStartPosition * 100 / mDuration).toFloat())
-                timeLineBar.setThumbValue(1, (mEndPosition * 100 / mDuration).toFloat())
-            }
-            else -> {
-                mStartPosition = 0
-                mEndPosition = mDuration
-            }
-        }
         video_loader.seekTo(mStartPosition)
         mTimeVideo = mDuration
-        timeLineBar.initMaxWidth()
     }
 
     private fun setTimeFrames() {
@@ -349,7 +304,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
      *
      * @param visible whether or not the videoInformation will be visible
      */
-    fun setVideoInformationVisibility(visible: Boolean): VideoTrimmer {
+    fun setVideoInformationVisibility(visible: Boolean): VideoCropper {
         timeFrame.visibility = if (visible) View.VISIBLE else View.GONE
         return this
     }
@@ -359,7 +314,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
      *
      * @param onTrimVideoListener interface for events
      */
-    fun setOnTrimVideoListener(onTrimVideoListener: OnTrimVideoListener): VideoTrimmer {
+    fun setOnTrimVideoListener(onTrimVideoListener: OnTrimVideoListener): VideoCropper {
         mOnTrimVideoListener = onTrimVideoListener
         return this
     }
@@ -369,7 +324,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
      *
      * @param onVideoListener interface for events
      */
-    fun setOnVideoListener(onVideoListener: OnVideoListener): VideoTrimmer {
+    fun setOnVideoListener(onVideoListener: OnVideoListener): VideoCropper {
         mOnVideoListener = onVideoListener
         return this
     }
@@ -382,33 +337,12 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         UiThreadExecutor.cancelAll("")
     }
 
-    /**
-     * Set the maximum duration of the trimmed video.
-     * The trimmer interface wont allow the user to set duration longer than maxDuration
-     *
-     * @param maxDuration the maximum duration of the trimmed video in seconds
-     */
-    fun setMaxDuration(maxDuration: Int): VideoTrimmer {
-        mMaxDuration = maxDuration * 1000
-        return this
-    }
-
-    fun setMinDuration(minDuration: Int): VideoTrimmer {
-        mMinDuration = minDuration * 1000
-        return this
-    }
-
-    fun setDestinationPath(path: String): VideoTrimmer {
+    fun setDestinationPath(path: String): VideoCropper {
         destinationPath = path
         return this
     }
 
-    /**
-     * Sets the uri of the video to be trimmer
-     *
-     * @param videoURI Uri of the video
-     */
-    fun setVideoURI(videoURI: Uri): VideoTrimmer {
+    fun setVideoURI(videoURI: Uri): VideoCropper {
         mSrc = videoURI
         video_loader.setVideoURI(mSrc)
         video_loader.requestFocus()
@@ -416,18 +350,18 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         return this
     }
 
-    fun setTextTimeSelectionTypeface(tf: Typeface?): VideoTrimmer {
+    fun setTextTimeSelectionTypeface(tf: Typeface?): VideoCropper {
         if (tf != null) textTimeSelection.typeface = tf
         return this
     }
 
-    fun setTextTimeTypeface(tf: Typeface?): VideoTrimmer {
+    fun setTextTimeTypeface(tf: Typeface?): VideoCropper {
         if (tf != null) textTime.typeface = tf
         return this
     }
 
-    private class MessageHandler internal constructor(view: VideoTrimmer) : Handler() {
-        private val mView: WeakReference<VideoTrimmer> = WeakReference(view)
+    private class MessageHandler internal constructor(view: VideoCropper) : Handler() {
+        private val mView: WeakReference<VideoCropper> = WeakReference(view)
         override fun handleMessage(msg: Message) {
             val view = mView.get()
             if (view == null || view.video_loader == null) return
