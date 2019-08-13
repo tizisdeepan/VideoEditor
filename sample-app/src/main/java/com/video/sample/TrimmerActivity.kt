@@ -18,7 +18,6 @@ import com.video.trimmer.interfaces.OnVideoListener
 import kotlinx.android.synthetic.main.activity_trimmer.*
 import java.io.File
 
-
 class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,12 +29,14 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
             var path = ""
             if (extraIntent != null) path = extraIntent.getStringExtra(MainActivity.EXTRA_VIDEO_PATH)
             videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMIBOLD])
-            videoTrimmer.setTextTimeTypeface(FontsHelper[this, FontsConstants.SEMIBOLD])
-            videoTrimmer.setOnTrimVideoListener(this)
-            videoTrimmer.setOnVideoListener(this)
-            videoTrimmer.setVideoURI(Uri.parse(path))
-            videoTrimmer.setVideoInformationVisibility(true)
-            videoTrimmer.destinationPath = Environment.getExternalStorageDirectory().toString() + File.separator + "Zoho Social" + File.separator + "Videos" + File.separator
+                    .setTextTimeTypeface(FontsHelper[this, FontsConstants.SEMIBOLD])
+                    .setOnTrimVideoListener(this)
+                    .setOnVideoListener(this)
+                    .setVideoURI(Uri.parse(path))
+                    .setVideoInformationVisibility(true)
+                    .setMaxDuration(5)
+                    .setMinDuration(2)
+                    .setDestinationPath(Environment.getExternalStorageDirectory().toString() + File.separator + "Zoho Social" + File.separator + "Videos" + File.separator)
         }
 
         back.setOnClickListener {

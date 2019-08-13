@@ -349,8 +349,9 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
      *
      * @param visible whether or not the videoInformation will be visible
      */
-    fun setVideoInformationVisibility(visible: Boolean) {
+    fun setVideoInformationVisibility(visible: Boolean): VideoTrimmer {
         timeFrame.visibility = if (visible) View.VISIBLE else View.GONE
+        return this
     }
 
     /**
@@ -358,8 +359,9 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
      *
      * @param onTrimVideoListener interface for events
      */
-    fun setOnTrimVideoListener(onTrimVideoListener: OnTrimVideoListener) {
+    fun setOnTrimVideoListener(onTrimVideoListener: OnTrimVideoListener): VideoTrimmer {
         mOnTrimVideoListener = onTrimVideoListener
+        return this
     }
 
     /**
@@ -367,8 +369,9 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
      *
      * @param onVideoListener interface for events
      */
-    fun setOnVideoListener(onVideoListener: OnVideoListener) {
+    fun setOnVideoListener(onVideoListener: OnVideoListener): VideoTrimmer {
         mOnVideoListener = onVideoListener
+        return this
     }
 
     /**
@@ -385,12 +388,19 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
      *
      * @param maxDuration the maximum duration of the trimmed video in seconds
      */
-    fun setMaxDuration(maxDuration: Int) {
+    fun setMaxDuration(maxDuration: Int): VideoTrimmer {
         mMaxDuration = maxDuration * 1000
+        return this
     }
 
-    fun setMinDuration(minDuration: Int) {
+    fun setMinDuration(minDuration: Int): VideoTrimmer {
         mMinDuration = minDuration * 1000
+        return this
+    }
+
+    fun setDestinationPath(path: String): VideoTrimmer {
+        destinationPath = path
+        return this
     }
 
     /**
@@ -398,19 +408,22 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
      *
      * @param videoURI Uri of the video
      */
-    fun setVideoURI(videoURI: Uri) {
+    fun setVideoURI(videoURI: Uri): VideoTrimmer {
         mSrc = videoURI
         video_loader.setVideoURI(mSrc)
         video_loader.requestFocus()
         timeLineView.setVideo(mSrc)
+        return this
     }
 
-    fun setTextTimeSelectionTypeface(tf: Typeface?) {
+    fun setTextTimeSelectionTypeface(tf: Typeface?): VideoTrimmer {
         if (tf != null) textTimeSelection.typeface = tf
+        return this
     }
 
-    fun setTextTimeTypeface(tf: Typeface?) {
+    fun setTextTimeTypeface(tf: Typeface?): VideoTrimmer {
         if (tf != null) textTime.typeface = tf
+        return this
     }
 
     private class MessageHandler internal constructor(view: VideoTrimmer) : Handler() {

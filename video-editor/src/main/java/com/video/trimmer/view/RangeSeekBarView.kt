@@ -157,7 +157,7 @@ class RangeSeekBarView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     private fun checkPositionThumb(mThumbLeft: Thumb, mThumbRight: Thumb, dx: Float, isLeftMove: Boolean) {
         if (isLeftMove && dx < 0) {
-            if (mThumbRight.pos - (mThumbLeft.pos + dx) > mMaxWidth) {
+            if (mThumbRight.pos + dx - mThumbLeft.pos > mMaxWidth) {
                 mThumbRight.pos = mThumbLeft.pos + dx + mMaxWidth
                 setThumbPos(1, mThumbRight.pos)
             }

@@ -48,29 +48,27 @@ class TimeLineView @JvmOverloads constructor(context: Context, attrs: AttributeS
                     val thumbnailList = LongSparseArray<Bitmap>()
                     val mediaMetadataRetriever = MediaMetadataRetriever()
                     mediaMetadataRetriever.setDataSource(context, mVideoUri)
-                    // Retrieve media data
                     val videoLengthInMs = (Integer.parseInt(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)) * 1000).toLong()
-                    // Set thumbnail properties (Thumbs are squares)
                     val thumbWidth = mHeightView
                     val thumbHeight = mHeightView
                     val numThumbs = ceil((viewWidth.toFloat() / thumbWidth).toDouble()).toInt()
                     val interval = videoLengthInMs / numThumbs
                     for (i in 0 until numThumbs) {
                         var bitmap = mediaMetadataRetriever.getFrameAtTime(i * interval, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-                        // TODO: bitmap might be null here, hence throwing NullPointerException. You were right
-                        try {
-                            bitmap = Bitmap.createScaledBitmap(bitmap, thumbWidth, thumbHeight, false)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                        if (bitmap != null) {
+                            try {
+                                bitmap = Bitmap.createScaledBitmap(bitmap, thumbWidth, thumbHeight, false)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                            thumbnailList.put(i.toLong(), bitmap)
                         }
-                        thumbnailList.put(i.toLong(), bitmap)
                     }
                     mediaMetadataRetriever.release()
                     returnBitmaps(thumbnailList)
                 } catch (e: Throwable) {
                     Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e)
                 }
-
             }
         }
         )
