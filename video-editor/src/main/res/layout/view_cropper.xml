@@ -1,34 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/layout_surface_view"
+    <com.video.trimmer.utils.cropper.CropImageView
+        android:id="@+id/videoFrame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@+id/layout"
-        android:background="@android:color/black"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <VideoView
-            android:id="@+id/video_loader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true" />
-
-        <ImageView
-            android:id="@+id/icon_video_play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/play_button" />
-
-    </RelativeLayout>
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        app:cropInitialCropWindowPaddingRatio="0"
+        app:cropMultiTouchEnabled="false"
+        app:cropScaleType="centerInside"
+        app:cropTouchRadius="44dp" />
 
     <RelativeLayout
         android:id="@+id/layout"

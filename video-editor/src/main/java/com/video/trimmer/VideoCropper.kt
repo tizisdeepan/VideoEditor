@@ -6,8 +6,6 @@ import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Environment
-import android.os.Handler
-import android.os.Message
 import android.util.AttributeSet
 import android.util.Log
 import android.view.GestureDetector
@@ -25,7 +23,6 @@ import com.video.trimmer.utils.*
 import com.video.trimmer.view.Thumb
 import kotlinx.android.synthetic.main.view_cropper.view.*
 import java.io.File
-import java.lang.ref.WeakReference
 import java.util.*
 
 class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
@@ -43,7 +40,6 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     private var mEndPosition = 0
     private var mResetSeekBar = true
-    private val mMessageHandler = MessageHandler(this)
 
     private var destinationPath: String
         get() {
@@ -78,41 +74,19 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
         })
         mListeners.add(timeVideoView)
 
-        val gestureDetector = GestureDetector(context,
-                object : GestureDetector.SimpleOnGestureListener() {
-                    override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                        onClickVideoPlayPause()
-                        return true
-                    }
-                }
-        )
-
-        video_loader.setOnErrorListener { _, what, _ ->
-            mOnTrimVideoListener?.onError("Something went wrong reason : $what")
-            false
-        }
-
-        video_loader.setOnTouchListener { _, event ->
-            gestureDetector.onTouchEvent(event)
-            true
-        }
-
         handlerTop.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 onPlayerIndicatorSeekChanged(progress, fromUser)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-                onPlayerIndicatorSeekStart()
+
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                onPlayerIndicatorSeekStop(seekBar)
+
             }
         })
-
-        video_loader.setOnPreparedListener { mp -> onVideoPrepared(mp) }
-        video_loader.setOnCompletionListener { onVideoCompleted() }
     }
 
     private fun onPlayerIndicatorSeekChanged(progress: Int, fromUser: Boolean) {
@@ -129,24 +103,6 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
         }
     }
 
-    private fun onPlayerIndicatorSeekStart() {
-        mMessageHandler.removeMessages(SHOW_PROGRESS)
-        video_loader.pause()
-        icon_video_play.visibility = View.VISIBLE
-        notifyProgressUpdate(false)
-    }
-
-    private fun onPlayerIndicatorSeekStop(seekBar: SeekBar) {
-        mMessageHandler.removeMessages(SHOW_PROGRESS)
-        video_loader.pause()
-        icon_video_play.visibility = View.VISIBLE
-
-        val duration = (mDuration * seekBar.progress / 1000L).toInt()
-        video_loader.seekTo(duration)
-        setTimeVideo(duration)
-        notifyProgressUpdate(false)
-    }
-
     private fun setProgressBarPosition(position: Int) {
         if (mDuration > 0) handlerTop.progress = (1000L * position / mDuration).toInt()
     }
@@ -159,8 +115,6 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     fun onSaveClicked() {
         mOnTrimVideoListener?.onTrimStarted()
-        icon_video_play.visibility = View.VISIBLE
-        video_loader.pause()
 
         val mediaMetadataRetriever = MediaMetadataRetriever()
         mediaMetadataRetriever.setDataSource(context, mSrc)
@@ -183,24 +137,7 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
         VideoOptions(context).trimVideo(TrimVideoUtils.stringForTime(mStartPosition), TrimVideoUtils.stringForTime(mEndPosition), file.path, outPutPath, outputFileUri, mOnTrimVideoListener)
     }
 
-    private fun onClickVideoPlayPause() {
-        if (video_loader.isPlaying) {
-            icon_video_play.visibility = View.VISIBLE
-            mMessageHandler.removeMessages(SHOW_PROGRESS)
-            video_loader.pause()
-        } else {
-            icon_video_play.visibility = View.GONE
-            if (mResetSeekBar) {
-                mResetSeekBar = false
-                video_loader.seekTo(mStartPosition)
-            }
-            mMessageHandler.sendEmptyMessage(SHOW_PROGRESS)
-            video_loader.start()
-        }
-    }
-
     fun onCancelClicked() {
-        video_loader.stopPlayback()
         mOnTrimVideoListener?.cancelAction()
     }
 
@@ -208,10 +145,10 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
         val videoWidth = mp.videoWidth
         val videoHeight = mp.videoHeight
         val videoProportion = videoWidth.toFloat() / videoHeight.toFloat()
-        val screenWidth = layout_surface_view.width
-        val screenHeight = layout_surface_view.height
+        val screenWidth = videoFrame.width
+        val screenHeight = videoFrame.height
         val screenProportion = screenWidth.toFloat() / screenHeight.toFloat()
-        val lp = video_loader.layoutParams
+        val lp = videoFrame.layoutParams
 
         if (videoProportion > screenProportion) {
             lp.width = screenWidth
@@ -220,11 +157,8 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
             lp.width = (videoProportion * screenHeight.toFloat()).toInt()
             lp.height = screenHeight
         }
-        video_loader.layoutParams = lp
+        videoFrame.layoutParams = lp
 
-        icon_video_play.visibility = View.VISIBLE
-
-        mDuration = video_loader.duration
         setSeekBarPosition()
 
         setTimeFrames()
@@ -234,7 +168,6 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun setSeekBarPosition() {
-        video_loader.seekTo(mStartPosition)
         mTimeVideo = mDuration
     }
 
@@ -252,7 +185,6 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
         when (index) {
             Thumb.LEFT -> {
                 mStartPosition = (mDuration * value / 100L).toInt()
-                video_loader.seekTo(mStartPosition)
             }
             Thumb.RIGHT -> {
                 mEndPosition = (mDuration * value / 100L).toInt()
@@ -262,35 +194,8 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
         mTimeVideo = mEndPosition - mStartPosition
     }
 
-    private fun onStopSeekThumbs() {
-        mMessageHandler.removeMessages(SHOW_PROGRESS)
-        video_loader.pause()
-        icon_video_play.visibility = View.VISIBLE
-    }
-
-    private fun onVideoCompleted() {
-        video_loader.seekTo(mStartPosition)
-    }
-
-    private fun notifyProgressUpdate(all: Boolean) {
-        if (mDuration == 0) return
-
-        val position = video_loader.currentPosition
-        if (all) {
-            for (item in mListeners) {
-                item.updateProgress(position, mDuration, (position * 100 / mDuration).toFloat())
-            }
-        } else {
-            mListeners[0].updateProgress(position, mDuration, (position * 100 / mDuration).toFloat())
-        }
-    }
-
     private fun updateVideoProgress(time: Int) {
-        if (video_loader == null) return
         if (time >= mEndPosition) {
-            mMessageHandler.removeMessages(SHOW_PROGRESS)
-            video_loader.pause()
-            icon_video_play.visibility = View.VISIBLE
             mResetSeekBar = true
             return
         }
@@ -329,14 +234,6 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
         return this
     }
 
-    /**
-     * Cancel all current operations
-     */
-    fun destroy() {
-        BackgroundExecutor.cancelAll("", true)
-        UiThreadExecutor.cancelAll("")
-    }
-
     fun setDestinationPath(path: String): VideoCropper {
         destinationPath = path
         return this
@@ -344,8 +241,6 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     fun setVideoURI(videoURI: Uri): VideoCropper {
         mSrc = videoURI
-        video_loader.setVideoURI(mSrc)
-        video_loader.requestFocus()
         timeLineView.setVideo(mSrc)
         return this
     }
@@ -358,16 +253,6 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
     fun setTextTimeTypeface(tf: Typeface?): VideoCropper {
         if (tf != null) textTime.typeface = tf
         return this
-    }
-
-    private class MessageHandler internal constructor(view: VideoCropper) : Handler() {
-        private val mView: WeakReference<VideoCropper> = WeakReference(view)
-        override fun handleMessage(msg: Message) {
-            val view = mView.get()
-            if (view == null || view.video_loader == null) return
-            view.notifyProgressUpdate(true)
-            if (view.video_loader.isPlaying) sendEmptyMessageDelayed(0, 10)
-        }
     }
 
     companion object {
