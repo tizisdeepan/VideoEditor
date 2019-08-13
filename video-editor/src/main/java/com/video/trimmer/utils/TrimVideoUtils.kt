@@ -124,8 +124,8 @@ object TrimVideoUtils {
         return timeOfSyncSamples[timeOfSyncSamples.size - 1]
     }
 
-    fun stringForTime(timeMs: Int): String {
-        val totalSeconds = timeMs / 1000
+    fun stringForTime(timeMs: Float): String {
+        val totalSeconds = (timeMs / 1000).toInt()
         val seconds = totalSeconds % 60
         val minutes = totalSeconds / 60 % 60
         val hours = totalSeconds / 3600

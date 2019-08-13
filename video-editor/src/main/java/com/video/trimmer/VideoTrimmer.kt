@@ -43,11 +43,11 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     private var mOnTrimVideoListener: OnTrimVideoListener? = null
     private var mOnVideoListener: OnVideoListener? = null
 
-    private var mDuration = 0
-    private var mTimeVideo = 0
-    private var mStartPosition = 0
+    private var mDuration = 0f
+    private var mTimeVideo = 0f
+    private var mStartPosition = 0f
 
-    private var mEndPosition = 0
+    private var mEndPosition = 0f
     private var mResetSeekBar = true
     private val mMessageHandler = MessageHandler(this)
 
@@ -78,11 +78,10 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     private fun setUpListeners() {
         mListeners = ArrayList()
         mListeners.add(object : OnProgressVideoListener {
-            override fun updateProgress(time: Int, max: Int, scale: Float) {
+            override fun updateProgress(time: Float, max: Float, scale: Float) {
                 updateVideoProgress(time)
             }
         })
-        mListeners.add(timeVideoView)
 
         val gestureDetector = GestureDetector(context,
                 object : GestureDetector.SimpleOnGestureListener() {
@@ -122,6 +121,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             }
 
             override fun onSeek(rangeSeekBarView: RangeSeekBarView, index: Int, value: Float) {
+                handlerTop.visibility = View.GONE
                 onSeekThumbs(index, value)
             }
 
@@ -138,7 +138,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun onPlayerIndicatorSeekChanged(progress: Int, fromUser: Boolean) {
-        var duration = (mDuration * progress / 1000L).toInt()
+        var duration = (mDuration * progress / 1000L)
         if (fromUser) {
             if (duration < mStartPosition) {
                 setProgressBarPosition(mStartPosition)
@@ -147,7 +147,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                 setProgressBarPosition(mEndPosition)
                 duration = mEndPosition
             }
-            setTimeVideo(duration)
         }
     }
 
@@ -165,11 +164,10 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
         val duration = (mDuration * seekBar.progress / 1000L).toInt()
         video_loader.seekTo(duration)
-        setTimeVideo(duration)
         notifyProgressUpdate(false)
     }
 
-    private fun setProgressBarPosition(position: Int) {
+    private fun setProgressBarPosition(position: Float) {
         if (mDuration > 0) handlerTop.progress = (1000L * position / mDuration).toInt()
     }
 
@@ -215,7 +213,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             icon_video_play.visibility = View.GONE
             if (mResetSeekBar) {
                 mResetSeekBar = false
-                video_loader.seekTo(mStartPosition)
+                video_loader.seekTo(mStartPosition.toInt())
             }
             mMessageHandler.sendEmptyMessage(SHOW_PROGRESS)
             video_loader.start()
@@ -247,11 +245,10 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
         icon_video_play.visibility = View.VISIBLE
 
-        mDuration = video_loader.duration
+        mDuration = video_loader.duration.toFloat()
         setSeekBarPosition()
 
         setTimeFrames()
-        setTimeVideo(0)
 
         mOnVideoListener?.onVideoPrepared()
     }
@@ -261,24 +258,21 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             mDuration >= mMaxDuration && mMaxDuration != -1 -> {
                 mStartPosition = mDuration / 2 - mMaxDuration / 2
                 mEndPosition = mDuration / 2 + mMaxDuration / 2
-                Log.e("mDuration", mDuration.toString())
-                Log.e("mStartPosition", mStartPosition.toString())
-                Log.e("mEndPosition", mEndPosition.toString())
-                timeLineBar.setThumbValue(0, (mStartPosition * 100 / mDuration).toFloat())
-                timeLineBar.setThumbValue(1, (mEndPosition * 100 / mDuration).toFloat())
+                timeLineBar.setThumbValue(0, (mStartPosition * 100 / mDuration))
+                timeLineBar.setThumbValue(1, (mEndPosition * 100 / mDuration))
             }
             mDuration <= mMinDuration && mMinDuration != -1 -> {
                 mStartPosition = mDuration / 2 - mMinDuration / 2
                 mEndPosition = mDuration / 2 + mMinDuration / 2
-                timeLineBar.setThumbValue(0, (mStartPosition * 100 / mDuration).toFloat())
-                timeLineBar.setThumbValue(1, (mEndPosition * 100 / mDuration).toFloat())
+                timeLineBar.setThumbValue(0, (mStartPosition * 100 / mDuration))
+                timeLineBar.setThumbValue(1, (mEndPosition * 100 / mDuration))
             }
             else -> {
-                mStartPosition = 0
+                mStartPosition = 0f
                 mEndPosition = mDuration
             }
         }
-        video_loader.seekTo(mStartPosition)
+        video_loader.seekTo(mStartPosition.toInt())
         mTimeVideo = mDuration
         timeLineBar.initMaxWidth()
     }
@@ -288,19 +282,14 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         textTimeSelection.text = String.format("%s %s - %s %s", TrimVideoUtils.stringForTime(mStartPosition), seconds, TrimVideoUtils.stringForTime(mEndPosition), seconds)
     }
 
-    private fun setTimeVideo(position: Int) {
-        val seconds = context.getString(R.string.short_seconds)
-        textTime.text = String.format("%s %s", TrimVideoUtils.stringForTime(position), seconds)
-    }
-
     private fun onSeekThumbs(index: Int, value: Float) {
         when (index) {
             Thumb.LEFT -> {
-                mStartPosition = (mDuration * value / 100L).toInt()
-                video_loader.seekTo(mStartPosition)
+                mStartPosition = (mDuration * value / 100L)
+                video_loader.seekTo(mStartPosition.toInt())
             }
             Thumb.RIGHT -> {
-                mEndPosition = (mDuration * value / 100L).toInt()
+                mEndPosition = (mDuration * value / 100L)
             }
         }
         setTimeFrames()
@@ -314,24 +303,25 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun onVideoCompleted() {
-        video_loader.seekTo(mStartPosition)
+        video_loader.seekTo(mStartPosition.toInt())
     }
 
     private fun notifyProgressUpdate(all: Boolean) {
-        if (mDuration == 0) return
-
+        if (mDuration == 0f) return
         val position = video_loader.currentPosition
         if (all) {
             for (item in mListeners) {
-                item.updateProgress(position, mDuration, (position * 100 / mDuration).toFloat())
+                item.updateProgress(position.toFloat(), mDuration, (position * 100 / mDuration))
             }
         } else {
-            mListeners[0].updateProgress(position, mDuration, (position * 100 / mDuration).toFloat())
+            mListeners[0].updateProgress(position.toFloat(), mDuration, (position * 100 / mDuration))
         }
     }
 
-    private fun updateVideoProgress(time: Int) {
+    private fun updateVideoProgress(time: Float) {
         if (video_loader == null) return
+        if (time <= mStartPosition && time <= mEndPosition) handlerTop.visibility = View.GONE
+        else handlerTop.visibility = View.VISIBLE
         if (time >= mEndPosition) {
             mMessageHandler.removeMessages(SHOW_PROGRESS)
             video_loader.pause()
@@ -340,7 +330,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             return
         }
         setProgressBarPosition(time)
-        setTimeVideo(time)
     }
 
     /**
@@ -418,11 +407,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     fun setTextTimeSelectionTypeface(tf: Typeface?): VideoTrimmer {
         if (tf != null) textTimeSelection.typeface = tf
-        return this
-    }
-
-    fun setTextTimeTypeface(tf: Typeface?): VideoTrimmer {
-        if (tf != null) textTime.typeface = tf
         return this
     }
 

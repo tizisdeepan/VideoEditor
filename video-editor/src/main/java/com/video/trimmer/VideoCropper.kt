@@ -34,11 +34,11 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
     private var mOnTrimVideoListener: OnTrimVideoListener? = null
     private var mOnVideoListener: OnVideoListener? = null
 
-    private var mDuration = 0
-    private var mTimeVideo = 0
-    private var mStartPosition = 0
+    private var mDuration = 0f
+    private var mTimeVideo = 0f
+    private var mStartPosition = 0f
 
-    private var mEndPosition = 0
+    private var mEndPosition = 0f
     private var mResetSeekBar = true
 
     private var destinationPath: String
@@ -68,7 +68,7 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
     private fun setUpListeners() {
         mListeners = ArrayList()
         mListeners.add(object : OnProgressVideoListener {
-            override fun updateProgress(time: Int, max: Int, scale: Float) {
+            override fun updateProgress(time: Float, max: Float, scale: Float) {
                 updateVideoProgress(time)
             }
         })
@@ -90,7 +90,7 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun onPlayerIndicatorSeekChanged(progress: Int, fromUser: Boolean) {
-        var duration = (mDuration * progress / 1000L).toInt()
+        var duration = (mDuration * progress / 1000L)
         if (fromUser) {
             if (duration < mStartPosition) {
                 setProgressBarPosition(mStartPosition)
@@ -103,7 +103,7 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
         }
     }
 
-    private fun setProgressBarPosition(position: Int) {
+    private fun setProgressBarPosition(position: Float) {
         if (mDuration > 0) handlerTop.progress = (1000L * position / mDuration).toInt()
     }
 
@@ -162,7 +162,7 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
         setSeekBarPosition()
 
         setTimeFrames()
-        setTimeVideo(0)
+        setTimeVideo(0f)
 
         mOnVideoListener?.onVideoPrepared()
     }
@@ -176,7 +176,7 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
         textTimeSelection.text = String.format("%s %s - %s %s", TrimVideoUtils.stringForTime(mStartPosition), seconds, TrimVideoUtils.stringForTime(mEndPosition), seconds)
     }
 
-    private fun setTimeVideo(position: Int) {
+    private fun setTimeVideo(position: Float) {
         val seconds = context.getString(R.string.short_seconds)
         textTime.text = String.format("%s %s", TrimVideoUtils.stringForTime(position), seconds)
     }
@@ -184,17 +184,17 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
     private fun onSeekThumbs(index: Int, value: Float) {
         when (index) {
             Thumb.LEFT -> {
-                mStartPosition = (mDuration * value / 100L).toInt()
+                mStartPosition = (mDuration * value / 100L)
             }
             Thumb.RIGHT -> {
-                mEndPosition = (mDuration * value / 100L).toInt()
+                mEndPosition = (mDuration * value / 100L)
             }
         }
         setTimeFrames()
         mTimeVideo = mEndPosition - mStartPosition
     }
 
-    private fun updateVideoProgress(time: Int) {
+    private fun updateVideoProgress(time: Float) {
         if (time >= mEndPosition) {
             mResetSeekBar = true
             return

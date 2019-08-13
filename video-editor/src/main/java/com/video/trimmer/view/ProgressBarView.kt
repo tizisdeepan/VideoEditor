@@ -94,10 +94,10 @@ class ProgressBarView @JvmOverloads constructor(context: Context, attrs: Attribu
         } else {
             Rect(mBackgroundRect!!.left, mBackgroundRect!!.top, newValue, mBackgroundRect!!.bottom)
         }
-        updateProgress(0, 0, 0.0f)
+        updateProgress(0f, 0f, 0.0f)
     }
 
-    override fun updateProgress(time: Int, max: Int, scale: Float) {
+    override fun updateProgress(time: Float, max: Float, scale: Float) {
         if (mBackgroundRect != null) {
             mProgressRect = if (scale == 0f) {
                 Rect(0, mBackgroundRect!!.top, 0, mBackgroundRect!!.bottom)
