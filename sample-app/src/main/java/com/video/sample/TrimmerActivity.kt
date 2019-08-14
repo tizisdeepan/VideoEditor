@@ -93,14 +93,14 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
         }
     }
 
-    lateinit var dothis: () -> Unit
+    lateinit var doThis: () -> Unit
     private fun setupPermissions(doSomething: () -> Unit) {
         val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         val readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-        dothis = doSomething
+        doThis = doSomething
         if (writePermission != PackageManager.PERMISSION_GRANTED && readPermission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), 101)
-        } else dothis()
+        } else doThis()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -108,7 +108,7 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
             101 -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     PermissionsDialog(this@TrimmerActivity, "To continue, give Zoho Social access to your Photos.").show()
-                } else dothis()
+                } else doThis()
             }
         }
     }

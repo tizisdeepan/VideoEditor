@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startTrimActivity(uri: Uri) {
-        val intent = Intent(this, TrimmerActivity::class.java)
+        val intent = Intent(this, CropperActivity::class.java)
         intent.putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this, uri))
         startActivity(intent)
     }
@@ -64,23 +64,22 @@ class MainActivity : AppCompatActivity() {
         internal val EXTRA_VIDEO_PATH = "EXTRA_VIDEO_PATH"
     }
 
-    private val PERMISSIONS_REQUEST_CODE = 101
-    lateinit var dothis: () -> Unit
+    lateinit var doThis: () -> Unit
     private fun setupPermissions(doSomething: () -> Unit) {
         val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         val readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-        dothis = doSomething
+        doThis = doSomething
         if (writePermission != PackageManager.PERMISSION_GRANTED && readPermission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), PERMISSIONS_REQUEST_CODE)
-        } else dothis()
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), 101)
+        } else doThis()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
-            PERMISSIONS_REQUEST_CODE -> {
+            101 -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     PermissionsDialog(this@MainActivity, "To continue, give Zoho Social access to your Photos.").show()
-                } else dothis()
+                } else doThis()
             }
         }
     }

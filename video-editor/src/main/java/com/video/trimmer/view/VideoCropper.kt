@@ -21,7 +21,7 @@ import java.util.*
 import kotlin.math.abs
 import android.media.MediaExtractor
 import android.media.MediaFormat
-
+import kotlinx.android.synthetic.main.view_cropper.view.timeLineView
 
 class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
 
@@ -52,7 +52,7 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun setUpListeners() {
-        seeker.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        handlerTop.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
             }
 
@@ -71,6 +71,7 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     fun setVideoURI(videoURI: Uri): VideoCropper {
         mSrc = videoURI
+        timeLineView.setVideo(mSrc)
         loadFrame(0)
         return this
     }
@@ -116,7 +117,7 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     fun onCancelClicked() {
-
+        mOnCropVideoListener?.cancelAction()
     }
 
     fun setOnCropVideoListener(onTrimVideoListener: OnCropVideoListener): VideoCropper {

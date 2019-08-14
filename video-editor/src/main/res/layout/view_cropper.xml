@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/black"
+    android:layout_height="wrap_content"
+    android:background="#2f3031"
     android:orientation="vertical">
 
     <com.video.trimmer.utils.cropper.CropImageView
@@ -30,24 +30,41 @@
             android:layout_height="wrap_content">
 
             <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="4dp"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/seekbar_bg" />
-
-            <SeekBar
-                android:id="@+id/seeker"
+                android:id="@+id/timeLineFrame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxHeight="30dp"
-                android:minHeight="30dp"
-                android:progressTint="@android:color/transparent"
-                android:thumbTint="#ffffff" />
+                android:background="@android:color/black"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.video.trimmer.view.TimeLineView
+                        android:id="@+id/timeLineView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
+
+            </FrameLayout>
+
+            <SeekBar
+                android:id="@+id/handlerTop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="5dp"
+                android:progressDrawable="@android:color/transparent"
+                android:secondaryProgress="0"
+                android:thumb="@drawable/video_line_2" />
+
         </RelativeLayout>
 
     </FrameLayout>
-
 
 </RelativeLayout>

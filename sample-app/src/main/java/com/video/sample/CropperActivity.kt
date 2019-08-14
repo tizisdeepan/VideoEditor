@@ -16,6 +16,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.video.trimmer.interfaces.OnCropVideoListener
 import kotlinx.android.synthetic.main.activity_cropper.*
+import kotlinx.android.synthetic.main.activity_cropper.back
+import kotlinx.android.synthetic.main.activity_cropper.save
+import kotlinx.android.synthetic.main.activity_trimmer.*
 import java.io.File
 
 class CropperActivity : AppCompatActivity(), OnCropVideoListener {
@@ -73,7 +76,10 @@ class CropperActivity : AppCompatActivity(), OnCropVideoListener {
     }
 
     override fun cancelAction() {
-
+        RunOnUiThread(this).safely {
+            videoTrimmer.destroy()
+            finish()
+        }
     }
 
     override fun onError(message: String) {
@@ -86,14 +92,14 @@ class CropperActivity : AppCompatActivity(), OnCropVideoListener {
         }
     }
 
-    lateinit var dothis: () -> Unit
+    lateinit var doThis: () -> Unit
     private fun setupPermissions(doSomething: () -> Unit) {
         val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
         val readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-        dothis = doSomething
+        doThis = doSomething
         if (writePermission != PackageManager.PERMISSION_GRANTED && readPermission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), 101)
-        } else dothis()
+        } else doThis()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -101,7 +107,7 @@ class CropperActivity : AppCompatActivity(), OnCropVideoListener {
             101 -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     PermissionsDialog(this@CropperActivity, "To continue, give Zoho Social access to your Photos.").show()
-                } else dothis()
+                } else doThis()
             }
         }
     }
