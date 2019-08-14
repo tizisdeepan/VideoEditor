@@ -9,8 +9,8 @@ import android.os.Bundle
 import android.provider.MediaStore
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.video.trimmer.utils.FileUtils
 import kotlinx.android.synthetic.main.activity_main.*
 
