@@ -7,8 +7,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.video.trimmer.utils.FileUtils
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startTrimActivity(uri: Uri) {
-        val intent = Intent(this, TrimmerActivity::class.java)
+        val intent = Intent(this, CropperActivity::class.java)
         intent.putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this, uri))
         startActivity(intent)
     }

@@ -10,7 +10,7 @@
         android:scaleType="centerInside"
         tools:ignore="contentDescription"/>
 
-    <com.zoho.zohosocial.common.utils.views.image.cropper.CropOverlayView
+    <com.video.trimmer.utils.cropper.CropOverlayView
         android:id="@+id/CropOverlayView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

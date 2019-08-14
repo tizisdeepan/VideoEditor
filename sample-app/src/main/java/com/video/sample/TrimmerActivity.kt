@@ -4,12 +4,13 @@ import android.Manifest
 import android.content.ContentUris
 import android.content.ContentValues
 import android.content.pm.PackageManager
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
@@ -58,10 +59,16 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
             RunOnUiThread(this).safely {
                 Toast.makeText(this, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
             }
-//            val id = ContentUris.parseId(getImageContentUri(File(uri.path)))
+            val mediaMetadataRetriever = MediaMetadataRetriever()
+            mediaMetadataRetriever.setDataSource(this, uri)
+            val duration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION).toLong()
+            val width = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH).toLong()
+            val height = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT).toLong()
             val values = ContentValues()
             values.put(MediaStore.Video.Media.DATA, uri.path)
-            values.put(MediaStore.Video.VideoColumns.DURATION, 2000)
+            values.put(MediaStore.Video.VideoColumns.DURATION, duration)
+            values.put(MediaStore.Video.VideoColumns.WIDTH, width)
+            values.put(MediaStore.Video.VideoColumns.HEIGHT, height)
             val id = ContentUris.parseId(contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values))
             Log.e("VIDEO ID", id.toString())
         }

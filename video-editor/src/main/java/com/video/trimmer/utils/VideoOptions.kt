@@ -8,6 +8,7 @@ import com.github.hiteshsondhi88.libffmpeg.FFmpeg
 import com.github.hiteshsondhi88.libffmpeg.FFmpegLoadBinaryResponseHandler
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException
 import com.video.trimmer.interfaces.OnCompressVideoListener
+import com.video.trimmer.interfaces.OnCropVideoListener
 import com.video.trimmer.interfaces.OnTrimVideoListener
 
 class VideoOptions(private var ctx: Context) {
@@ -69,6 +70,76 @@ class VideoOptions(private var ctx: Context) {
             }
         })
         listener?.onTrimStarted()
+    }
+
+    fun cropVideo(width: Int, height: Int, x: Int, y: Int, inputPath: String, outputPath: String, outputFileUri: Uri, listener: OnCropVideoListener?, frameCount: Int) {
+        val ff = FFmpeg.getInstance(ctx)
+        ff.loadBinary(object : FFmpegLoadBinaryResponseHandler {
+            override fun onFinish() {
+                Log.e("FFmpegLoad", "onFinish")
+            }
+
+            override fun onSuccess() {
+                Log.e("FFmpegLoad", "onSuccess")
+                val command = arrayOf("-i", inputPath, "-filter:v", "crop=$width:$height:$x:$y", "-threads", "5", "-preset", "ultrafast", "-strict", "-2", "-c:a", "copy", outputPath)
+                try {
+                    ff.execute(command, object : ExecuteBinaryResponseHandler() {
+                        override fun onSuccess(message: String?) {
+                            super.onSuccess(message)
+                            Log.e(TAG, "onSuccess: " + message!!)
+                        }
+
+                        override fun onProgress(message: String?) {
+                            super.onProgress(message)
+                            if (message != null) {
+                                val messageArray = message.split("frame=  ")
+                                if (messageArray.isNotEmpty()) {
+                                    val secondArray = messageArray[0].split(" ")
+                                    if (secondArray.isNotEmpty()) {
+                                        val framesString = secondArray[0]
+                                        try {
+                                            val frames = framesString.toInt()
+                                            val progress = (frames.toFloat() / frameCount.toFloat()) * 100f
+                                            listener?.onProgress(progress)
+                                        } catch (e: Exception) {
+                                        }
+                                    }
+                                }
+                            }
+                            Log.e(TAG, "onProgress: " + message!!)
+                        }
+
+                        override fun onFailure(message: String?) {
+                            super.onFailure(message)
+                            listener?.onError(message.toString())
+                            Log.e(TAG, "onFailure: " + message!!)
+                        }
+
+                        override fun onStart() {
+                            super.onStart()
+                            Log.e(TAG, "onStart: ")
+                        }
+
+                        override fun onFinish() {
+                            super.onFinish()
+                            listener?.getResult(outputFileUri)
+                            Log.e(TAG, "onFinish: ")
+                        }
+                    })
+                } catch (e: FFmpegCommandAlreadyRunningException) {
+                    listener?.onError(e.toString())
+                }
+            }
+
+            override fun onFailure() {
+                Log.e("FFmpegLoad", "onFailure")
+                listener?.onError("Failed")
+            }
+
+            override fun onStart() {
+            }
+        })
+        listener?.onCropStarted()
     }
 
     fun compressVideo(inputPath: String, outputPath: String, outputFileUri: Uri, width: String, height: String, listener: OnCompressVideoListener?) {

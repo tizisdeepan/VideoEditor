@@ -3,12 +3,11 @@ package com.video.trimmer.utils
 import android.annotation.SuppressLint
 import android.content.ContentUris
 import android.content.Context
-import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.support.v4.content.CursorLoader
+import androidx.loader.content.CursorLoader
 
 
 object RealPathUtil {
