@@ -20,7 +20,7 @@ import java.io.File
 
 class CropperActivity : AppCompatActivity(), OnCropVideoListener {
 
-    val progressDialog = VideoProgressDialog(this, "Cropping video. Please wait...")
+    private val progressDialog: VideoProgressDialog by lazy { VideoProgressDialog(this, "Cropping video. Please wait...") }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

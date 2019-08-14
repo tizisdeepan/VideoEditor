@@ -50,10 +50,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun startTrimActivity(uri: Uri) {
-        val intent = Intent(this, CropperActivity::class.java)
+        val intent = Intent(this, TrimmerActivity::class.java)
         intent.putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this, uri))
         startActivity(intent)
     }

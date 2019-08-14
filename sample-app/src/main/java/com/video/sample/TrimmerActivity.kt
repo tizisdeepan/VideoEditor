@@ -21,6 +21,8 @@ import java.io.File
 
 class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListener {
 
+    private val progressDialog: VideoProgressIndeterminateDialog by lazy { VideoProgressIndeterminateDialog(this, "Cropping video. Please wait...") }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trimmer)
@@ -51,14 +53,14 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
     override fun onTrimStarted() {
         RunOnUiThread(this).safely {
             Toast.makeText(this, "Started Trimming", Toast.LENGTH_SHORT).show()
+            progressDialog.show()
         }
     }
 
     override fun getResult(uri: Uri) {
         RunOnUiThread(this).safely {
-            RunOnUiThread(this).safely {
-                Toast.makeText(this, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(this, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
+            progressDialog.dismiss()
             val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(this, uri)
             val duration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION).toLong()

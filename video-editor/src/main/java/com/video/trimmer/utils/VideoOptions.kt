@@ -16,7 +16,7 @@ class VideoOptions(private var ctx: Context) {
         const val TAG = "VideoOptions"
     }
 
-    fun trimVideo(startPosition: String, endPosition: String, inputPath: String, outputPath: String, outputFileUri: Uri, listener: OnTrimVideoListener?) {
+    fun trimVideo(startPosition: String, endPosition: String, inputPath: String, outputPath: String, outputFileUri: Uri, listener: OnTrimVideoListener?, frameCount: Int) {
         val ff = FFmpeg.getInstance(ctx)
         ff.loadBinary(object : FFmpegLoadBinaryResponseHandler {
             override fun onFinish() {
@@ -35,7 +35,6 @@ class VideoOptions(private var ctx: Context) {
 
                         override fun onProgress(message: String?) {
                             super.onProgress(message)
-                            listener?.onError(message.toString())
                             Log.e(TAG, "onProgress: " + message!!)
                         }
 
@@ -92,11 +91,11 @@ class VideoOptions(private var ctx: Context) {
                         override fun onProgress(message: String?) {
                             super.onProgress(message)
                             if (message != null) {
-                                val messageArray = message.split("frame=  ")
-                                if (messageArray.isNotEmpty()) {
-                                    val secondArray = messageArray[0].split(" ")
+                                val messageArray = message.split("frame=")
+                                if (messageArray.size >= 2) {
+                                    val secondArray = messageArray[1].trim().split(" ")
                                     if (secondArray.isNotEmpty()) {
-                                        val framesString = secondArray[0]
+                                        val framesString = secondArray[0].trim()
                                         try {
                                             val frames = framesString.toInt()
                                             val progress = (frames.toFloat() / frameCount.toFloat()) * 100f

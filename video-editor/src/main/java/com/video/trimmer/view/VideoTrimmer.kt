@@ -2,6 +2,8 @@ package com.video.trimmer.view
 
 import android.content.Context
 import android.graphics.Typeface
+import android.media.MediaExtractor
+import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
@@ -200,7 +202,30 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                 ?: File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path.substring(mSrc.path.lastIndexOf("/") + 1)).absolutePath
         Log.e("SOURCE", file.path)
         Log.e("DESTINATION", outPutPath)
-        VideoOptions(context).trimVideo(TrimVideoUtils.stringForTime(mStartPosition), TrimVideoUtils.stringForTime(mEndPosition), file.path, outPutPath, outputFileUri, mOnTrimVideoListener)
+        val extractor = MediaExtractor()
+        var frameRate = 24
+        try {
+            extractor.setDataSource(file.path)
+            val numTracks = extractor.trackCount
+            for (i in 0..numTracks) {
+                val format = extractor.getTrackFormat(i)
+                val mime = format.getString(MediaFormat.KEY_MIME)
+                if (mime.startsWith("video/")) {
+                    if (format.containsKey(MediaFormat.KEY_FRAME_RATE)) {
+                        frameRate = format.getInteger(MediaFormat.KEY_FRAME_RATE);
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            extractor.release()
+        }
+        val duration = java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
+        val frameCount = duration / 1000 * frameRate
+        Log.e("FRAME RATE", frameRate.toString())
+        Log.e("FRAME COUNT", (duration / 1000 * frameRate).toString())
+        VideoOptions(context).trimVideo(TrimVideoUtils.stringForTime(mStartPosition), TrimVideoUtils.stringForTime(mEndPosition), file.path, outPutPath, outputFileUri, mOnTrimVideoListener, frameCount.toInt())
     }
 
     private fun onClickVideoPlayPause() {
