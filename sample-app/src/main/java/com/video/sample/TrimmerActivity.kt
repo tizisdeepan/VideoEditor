@@ -36,7 +36,7 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
                     .setOnVideoListener(this)
                     .setVideoURI(Uri.parse(path))
                     .setVideoInformationVisibility(true)
-                    .setMaxDuration(5)
+                    .setMaxDuration(10)
                     .setMinDuration(2)
                     .setDestinationPath(Environment.getExternalStorageDirectory().toString() + File.separator + "Zoho Social" + File.separator + "Videos" + File.separator)
         }

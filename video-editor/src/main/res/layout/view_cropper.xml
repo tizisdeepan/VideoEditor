@@ -11,60 +11,95 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/seekerFrame"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
         app:cropInitialCropWindowPaddingRatio="0"
         app:cropMultiTouchEnabled="false"
         app:cropScaleType="centerInside"
         app:cropTouchRadius="44dp" />
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/seekerFrame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:padding="16dp">
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp">
 
             <FrameLayout
-                android:id="@+id/timeLineFrame"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/black"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <com.video.trimmer.view.TimeLineView
-                        android:id="@+id/timeLineView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                </RelativeLayout>
-
-            </FrameLayout>
+                android:layout_height="3dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/seekbar_bg" />
 
             <SeekBar
-                android:id="@+id/handlerTop"
+                android:id="@+id/cropSeekbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="5dp"
-                android:progressDrawable="@android:color/transparent"
-                android:secondaryProgress="0"
-                android:thumb="@drawable/video_line_2" />
+                android:layout_centerVertical="true"
+                android:max="100"
+                android:maxHeight="20dp"
+                android:minHeight="20dp"
+                android:progress="0"
+                android:progressTint="@android:color/transparent"
+                android:thumbTint="#ffffff" />
 
         </RelativeLayout>
 
-    </FrameLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <FrameLayout
+                    android:id="@+id/timeLineFrame"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/black"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.video.trimmer.view.TimeLineView
+                            android:id="@+id/timeLineView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </RelativeLayout>
+
+                </FrameLayout>
+
+                <SeekBar
+                    android:id="@+id/handlerTop"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="5dp"
+                    android:progressDrawable="@android:color/transparent"
+                    android:secondaryProgress="0"
+                    android:thumb="@drawable/video_line_2" />
+
+            </RelativeLayout>
+        </FrameLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

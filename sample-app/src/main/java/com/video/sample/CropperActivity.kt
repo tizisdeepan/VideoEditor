@@ -35,6 +35,7 @@ class CropperActivity : AppCompatActivity(), OnCropVideoListener {
             if (extraIntent != null) path = extraIntent.getStringExtra(MainActivity.EXTRA_VIDEO_PATH)
             videoCropper.setVideoURI(Uri.parse(path))
                     .setOnCropVideoListener(this)
+                    .setMinMaxRatios(0.3f, 3f)
                     .setDestinationPath(Environment.getExternalStorageDirectory().toString() + File.separator + "Zoho Social" + File.separator + "Videos" + File.separator)
         }
 
