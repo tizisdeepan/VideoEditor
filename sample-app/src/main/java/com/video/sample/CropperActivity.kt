@@ -18,7 +18,6 @@ import com.video.trimmer.interfaces.OnCropVideoListener
 import kotlinx.android.synthetic.main.activity_cropper.*
 import kotlinx.android.synthetic.main.activity_cropper.back
 import kotlinx.android.synthetic.main.activity_cropper.save
-import kotlinx.android.synthetic.main.activity_trimmer.*
 import java.io.File
 
 class CropperActivity : AppCompatActivity(), OnCropVideoListener {
@@ -78,7 +77,6 @@ class CropperActivity : AppCompatActivity(), OnCropVideoListener {
 
     override fun cancelAction() {
         RunOnUiThread(this).safely {
-            videoTrimmer.destroy()
             finish()
         }
     }
