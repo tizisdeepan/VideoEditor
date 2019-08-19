@@ -78,18 +78,12 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
                 loadFrame(seekBar?.progress ?: 0)
             }
         })
-
-        cropFrame.setOnSetCropOverlayReleasedListener {
-            Log.e("RECT", it.toString())
-        }
     }
 
     fun onCropProgressChanged(progress: Int) {
         val width: Int
         val height: Int
         val progressRatio = mMinRatio + ((abs(mMinRatio - mMaxRatio) / cropSeekbar.max) * progress)
-        Log.e("VIDEO DIMENSIONS", "$videoWidth : $videoHeight")
-        Log.e("PROGRESS RATIO", progressRatio.toString())
         if (videoWidth > videoHeight) {
             height = (videoWidth / progressRatio).toInt()
             width = videoWidth
@@ -97,7 +91,6 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
             width = (progressRatio * videoHeight).toInt()
             height = videoHeight
         }
-        Log.e("ASPECT RATIO", "$width : $height : ${width.toFloat() / height.toFloat()}")
         cropFrame.setAspectRatio(width, height)
     }
 
