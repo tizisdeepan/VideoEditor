@@ -6,7 +6,7 @@ import android.util.Log
 import java.util.*
 
 object FontsHelper {
-    private val TAG = "TypefaceHelper"
+    private const val TAG = "TypefaceHelper"
 
     private val fontsCache = Hashtable<String, Typeface>()
 

@@ -31,7 +31,7 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
             val extraIntent = intent
             var path = ""
             if (extraIntent != null) path = extraIntent.getStringExtra(MainActivity.EXTRA_VIDEO_PATH)
-            videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMIBOLD])
+            videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMI_BOLD])
                     .setOnTrimVideoListener(this)
                     .setOnVideoListener(this)
                     .setVideoURI(Uri.parse(path))

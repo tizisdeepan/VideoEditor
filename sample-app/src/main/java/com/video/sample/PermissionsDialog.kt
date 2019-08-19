@@ -30,8 +30,8 @@ class PermissionsDialog(var ctx: Context, var msg: String) : Dialog(ctx) {
         }
 
         permissionsTitle.typeface = FontsHelper[ctx, FontsConstants.BOLD]
-        message.typeface = FontsHelper[ctx, FontsConstants.SEMIBOLD]
-        dismiss.typeface = FontsHelper[ctx, FontsConstants.SEMIBOLD]
-        settings.typeface = FontsHelper[ctx, FontsConstants.SEMIBOLD]
+        message.typeface = FontsHelper[ctx, FontsConstants.SEMI_BOLD]
+        dismiss.typeface = FontsHelper[ctx, FontsConstants.SEMI_BOLD]
+        settings.typeface = FontsHelper[ctx, FontsConstants.SEMI_BOLD]
     }
 }
