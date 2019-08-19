@@ -57,13 +57,11 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             if (mFinalPath == null) {
                 val folder = Environment.getExternalStorageDirectory()
                 mFinalPath = folder.path + File.separator
-                Log.e(TAG, "Using default path " + mFinalPath!!)
             }
             return mFinalPath ?: ""
         }
         set(finalPath) {
             mFinalPath = finalPath
-            Log.e(TAG, "Setting custom path " + mFinalPath!!)
         }
 
     init {
@@ -84,14 +82,12 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             }
         })
 
-        val gestureDetector = GestureDetector(context,
-                object : GestureDetector.SimpleOnGestureListener() {
-                    override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                        onClickVideoPlayPause()
-                        return true
-                    }
-                }
-        )
+        val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                onClickVideoPlayPause()
+                return true
+            }
+        })
 
         video_loader.setOnErrorListener { _, what, _ ->
             mOnTrimVideoListener?.onError("Something went wrong reason : $what")

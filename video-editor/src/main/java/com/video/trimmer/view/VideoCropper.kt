@@ -7,7 +7,6 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Environment
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.SeekBar
@@ -36,13 +35,11 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
             if (mFinalPath == null) {
                 val folder = Environment.getExternalStorageDirectory()
                 mFinalPath = folder.path + File.separator
-                Log.e(TAG, "Using default path " + mFinalPath!!)
             }
             return mFinalPath ?: ""
         }
         set(finalPath) {
             mFinalPath = finalPath
-            Log.e(TAG, "Setting custom path " + mFinalPath!!)
         }
 
     init {
@@ -140,8 +137,6 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
         mediaMetadataRetriever.setDataSource(context, mSrc)
         val duration = java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
         val frameCount = duration / 1000 * frameRate
-        Log.e("FRAME RATE", frameRate.toString())
-        Log.e("FRAME COUNT", (duration / 1000 * frameRate).toString())
         VideoOptions(context).cropVideo(width, height, x, y, file.path, outPutPath, outputFileUri, mOnCropVideoListener, frameCount.toInt())
     }
 
@@ -191,11 +186,6 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
                     Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e)
                 }
             }
-        }
-        )
-    }
-
-    companion object {
-        private val TAG = VideoCropper::class.java.simpleName
+        })
     }
 }
