@@ -22,14 +22,6 @@ object UiThreadExecutor {
 
     private val TOKENS = HashMap<String, Token>()
 
-    /**
-     * Store a new task in the map for providing cancellation. This method is
-     * used by AndroidAnnotations and not intended to be called by clients.
-     *
-     * @param id    the identifier of the task
-     * @param task  the task itself
-     * @param delay the delay or zero to run immediately
-     */
     fun runTask(id: String, task: Runnable, delay: Long) {
         if ("" == id) {
             HANDLER.postDelayed(task, delay)
@@ -65,11 +57,6 @@ object UiThreadExecutor {
         }
     }
 
-    /**
-     * Cancel all tasks having the specified `id`.
-     *
-     * @param id the cancellation identifier
-     */
     fun cancelAll(id: String) {
         val token: Token?
         synchronized(TOKENS) {
@@ -86,4 +73,4 @@ object UiThreadExecutor {
         internal var runnablesCount = 0
     }
 
-}// should not be instantiated
+}

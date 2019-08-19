@@ -4,12 +4,13 @@ import android.util.Log
 import java.util.ArrayList
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.max
 
 object BackgroundExecutor {
 
-    private val TAG = "BackgroundExecutor"
+    private const val TAG = "BackgroundExecutor"
 
-    val DEFAULT_EXECUTOR: Executor = Executors.newScheduledThreadPool(2 * Runtime.getRuntime().availableProcessors())
+    private val DEFAULT_EXECUTOR: Executor = Executors.newScheduledThreadPool(2 * Runtime.getRuntime().availableProcessors())
     private val executor = DEFAULT_EXECUTOR
     private val TASKS = ArrayList<Task>()
     private val CURRENT_SERIAL = ThreadLocal<String>()
@@ -144,7 +145,7 @@ object BackgroundExecutor {
 
         var id: String? = null
         var remainingDelay: Long = 0
-        var targetTimeMillis: Long = 0 /* since epoch */
+        private var targetTimeMillis: Long = 0 /* since epoch */
         var serial: String? = null
         var executionAsked: Boolean = false
         var future: Future<*>? = null
@@ -208,7 +209,7 @@ object BackgroundExecutor {
                     if (next != null) {
                         if (next.remainingDelay != 0L) {
                             /* the delay may not have elapsed yet */
-                            next.remainingDelay = Math.max(0L, targetTimeMillis - System.currentTimeMillis())
+                            next.remainingDelay = max(0L, targetTimeMillis - System.currentTimeMillis())
                         }
                         /* a task having the same serial was queued, execute it */
                         execute(next)

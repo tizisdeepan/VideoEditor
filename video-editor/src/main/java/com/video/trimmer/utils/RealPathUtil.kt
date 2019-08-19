@@ -7,8 +7,6 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import androidx.loader.content.CursorLoader
-
 
 object RealPathUtil {
 
@@ -46,81 +44,28 @@ object RealPathUtil {
         return null
     }
 
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is Google Photos.
-     */
     private fun isGooglePhotosUri(uri: Uri): Boolean = "com.google.android.apps.photos.content" == uri.authority
 
-    /**
-     * Get the value of the data column for this Uri. This is useful for
-     * MediaStore Uris, and other file-based ContentProviders.
-     *
-     * @param context The context.
-     * @param uri The Uri to query.
-     * @param selection (Optional) Filter used in the query.
-     * @param selectionArgs (Optional) Selection arguments used in the query.
-     * @return The value of the _data column, which is typically a file path.
-     */
+    @SuppressLint("Recycle")
     private fun getDataColumn(context: Context, uri: Uri?, selection: String?, selectionArgs: Array<String>?): String? {
         val column = "_data"
         val projection = arrayOf(column)
         val cursor = if (uri != null) context.contentResolver.query(uri, projection, selection, selectionArgs, null) else null
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-                val index = cursor.getColumnIndexOrThrow(column)
-                val result = cursor.getString(index)
-                cursor.close()
+        cursor.use {
+            if (it != null && it.moveToFirst()) {
+                val index = it.getColumnIndexOrThrow(column)
+                val result = it.getString(index)
+                it.close()
                 return result
             }
-        } finally {
-            cursor?.close()
         }
         return null
     }
 
-
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is ExternalStorageProvider.
-     */
     private fun isExternalStorageDocument(uri: Uri): Boolean = "com.android.externalstorage.documents" == uri.authority
 
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is DownloadsProvider.
-     */
     private fun isDownloadsDocument(uri: Uri): Boolean = "com.android.providers.downloads.documents" == uri.authority
 
-    /**
-     * @param uri The Uri to check.
-     * @return Whether the Uri authority is MediaProvider.
-     */
     private fun isMediaDocument(uri: Uri): Boolean = "com.android.providers.media.documents" == uri.authority
 
-    fun getRealPathFromURI_API11to18(context: Context, contentUri: Uri): String? {
-        val proj = arrayOf(MediaStore.Images.Media.DATA)
-        var result: String? = null
-        val cursorLoader = CursorLoader(context, contentUri, proj, null, null, null)
-        val cursor = cursorLoader.loadInBackground()
-        if (cursor != null) {
-            val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-            cursor.moveToFirst()
-            result = cursor.getString(columnIndex)
-        }
-        return result
-    }
-
-    fun getRealPathFromURI_BelowAPI11(context: Context, contentUri: Uri): String? {
-        val proj = arrayOf(MediaStore.Images.Media.DATA)
-        var result: String? = null
-        val cursor = context.contentResolver.query(contentUri, proj, null, null, null)
-        if (cursor != null) {
-            val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-            cursor.moveToFirst()
-            result = cursor.getString(columnIndex)
-            cursor.close()
-        }
-        return result
-    }
 }

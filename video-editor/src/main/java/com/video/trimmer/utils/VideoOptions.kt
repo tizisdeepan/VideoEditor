@@ -16,7 +16,7 @@ class VideoOptions(private var ctx: Context) {
         const val TAG = "VideoOptions"
     }
 
-    fun trimVideo(startPosition: String, endPosition: String, inputPath: String, outputPath: String, outputFileUri: Uri, listener: OnTrimVideoListener?, frameCount: Int) {
+    fun trimVideo(startPosition: String, endPosition: String, inputPath: String, outputPath: String, outputFileUri: Uri, listener: OnTrimVideoListener?) {
         val ff = FFmpeg.getInstance(ctx)
         ff.loadBinary(object : FFmpegLoadBinaryResponseHandler {
             override fun onFinish() {

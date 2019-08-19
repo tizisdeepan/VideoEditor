@@ -85,8 +85,8 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     fun onCropProgressChanged(progress: Int) {
-        var width = 0
-        var height = 0
+        val width: Int
+        val height: Int
         val progressRatio = mMinRatio + ((abs(mMinRatio - mMaxRatio) / cropSeekbar.max) * progress)
         Log.e("VIDEO DIMENSIONS", "$videoWidth : $videoHeight")
         Log.e("PROGRESS RATIO", progressRatio.toString())
@@ -118,12 +118,12 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
         val height = abs(rect.top - rect.bottom)
         val x = rect.left
         val y = rect.top
-        val file = File(mSrc.path)
+        val file = File(mSrc.path ?: "")
         val root = File(destinationPath)
         root.mkdirs()
         val outputFileUri = Uri.fromFile(File(root, "t_${Calendar.getInstance().timeInMillis}_" + file.nameWithoutExtension + ".mp4"))
         val outPutPath = RealPathUtil.realPathFromUriApi19(context, outputFileUri)
-                ?: File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path.substring(mSrc.path.lastIndexOf("/") + 1)).absolutePath
+                ?: File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path?.substring(mSrc.path!!.lastIndexOf("/") + 1)).absolutePath
         val extractor = MediaExtractor()
         var frameRate = 24
         try {
@@ -134,7 +134,7 @@ class VideoCropper @JvmOverloads constructor(context: Context, attrs: AttributeS
                 val mime = format.getString(MediaFormat.KEY_MIME)
                 if (mime.startsWith("video/")) {
                     if (format.containsKey(MediaFormat.KEY_FRAME_RATE)) {
-                        frameRate = format.getInteger(MediaFormat.KEY_FRAME_RATE);
+                        frameRate = format.getInteger(MediaFormat.KEY_FRAME_RATE)
                     }
                 }
             }

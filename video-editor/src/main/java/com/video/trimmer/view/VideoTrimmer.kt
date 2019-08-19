@@ -139,15 +139,10 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun onPlayerIndicatorSeekChanged(progress: Int, fromUser: Boolean) {
-        var duration = (mDuration * progress / 1000L)
+        val duration = (mDuration * progress / 1000L)
         if (fromUser) {
-            if (duration < mStartPosition) {
-                setProgressBarPosition(mStartPosition)
-                duration = mStartPosition
-            } else if (duration > mEndPosition) {
-                setProgressBarPosition(mEndPosition)
-                duration = mEndPosition
-            }
+            if (duration < mStartPosition) setProgressBarPosition(mStartPosition)
+            else if (duration > mEndPosition) setProgressBarPosition(mEndPosition)
         }
     }
 
@@ -186,12 +181,12 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
         val mediaMetadataRetriever = MediaMetadataRetriever()
         mediaMetadataRetriever.setDataSource(context, mSrc)
-        val METADATA_KEY_DURATION = java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
+        val metaDataKeyDuration = java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
 
-        val file = File(mSrc.path)
+        val file = File(mSrc.path ?: "")
 
         if (mTimeVideo < MIN_TIME_FRAME) {
-            if (METADATA_KEY_DURATION - mEndPosition > MIN_TIME_FRAME - mTimeVideo) mEndPosition += MIN_TIME_FRAME - mTimeVideo
+            if (metaDataKeyDuration - mEndPosition > MIN_TIME_FRAME - mTimeVideo) mEndPosition += MIN_TIME_FRAME - mTimeVideo
             else if (mStartPosition > MIN_TIME_FRAME - mTimeVideo) mStartPosition -= MIN_TIME_FRAME - mTimeVideo
         }
 
@@ -199,7 +194,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         root.mkdirs()
         val outputFileUri = Uri.fromFile(File(root, "t_${Calendar.getInstance().timeInMillis}_" + file.nameWithoutExtension + ".mp4"))
         val outPutPath = RealPathUtil.realPathFromUriApi19(context, outputFileUri)
-                ?: File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path.substring(mSrc.path.lastIndexOf("/") + 1)).absolutePath
+                ?: File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path?.substring(mSrc.path!!.lastIndexOf("/") + 1)).absolutePath
         Log.e("SOURCE", file.path)
         Log.e("DESTINATION", outPutPath)
         val extractor = MediaExtractor()
@@ -212,7 +207,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
                 val mime = format.getString(MediaFormat.KEY_MIME)
                 if (mime.startsWith("video/")) {
                     if (format.containsKey(MediaFormat.KEY_FRAME_RATE)) {
-                        frameRate = format.getInteger(MediaFormat.KEY_FRAME_RATE);
+                        frameRate = format.getInteger(MediaFormat.KEY_FRAME_RATE)
                     }
                 }
             }
@@ -222,10 +217,9 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
             extractor.release()
         }
         val duration = java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
-        val frameCount = duration / 1000 * frameRate
         Log.e("FRAME RATE", frameRate.toString())
         Log.e("FRAME COUNT", (duration / 1000 * frameRate).toString())
-        VideoOptions(context).trimVideo(TrimVideoUtils.stringForTime(mStartPosition), TrimVideoUtils.stringForTime(mEndPosition), file.path, outPutPath, outputFileUri, mOnTrimVideoListener, frameCount.toInt())
+        VideoOptions(context).trimVideo(TrimVideoUtils.stringForTime(mStartPosition), TrimVideoUtils.stringForTime(mEndPosition), file.path, outPutPath, outputFileUri, mOnTrimVideoListener)
     }
 
     private fun onClickVideoPlayPause() {
