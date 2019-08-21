@@ -21,7 +21,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'com.googlecode.mp4parser:isoparser:1.1.20'
     implementation 'org.jetbrains.anko:anko-sqlite:0.10.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
