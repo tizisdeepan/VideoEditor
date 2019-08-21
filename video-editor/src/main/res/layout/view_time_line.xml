@@ -22,8 +22,8 @@
 
         <ImageView
             android:id="@+id/icon_video_play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_50sdp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:background="@drawable/play_button" />
@@ -37,86 +37,77 @@
         android:layout_alignParentBottom="true"
         android:background="@color/background_video_color">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <RelativeLayout
+            android:id="@+id/timeFrame"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:background="@drawable/rounded_textview_video_trim"
+            android:gravity="center_horizontal"
+            android:visibility="gone">
 
-            <RelativeLayout
-                android:id="@+id/timeFrame"
+            <TextView
+                android:id="@+id/textTimeSelection"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/rounded_textview_video_trim"
-                android:gravity="center_horizontal"
-                android:visibility="gone">
+                android:layout_alignParentStart="true"
+                android:gravity="center"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingTop="@dimen/_3sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_3sdp"
+                android:textColor="#efc43b"
+                android:textSize="@dimen/text_small" />
 
-                <TextView
-                    android:id="@+id/textTimeSelection"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:paddingStart="15dp"
-                    android:paddingTop="5dp"
-                    android:paddingEnd="15dp"
-                    android:paddingBottom="5dp"
-                    android:textColor="#efc43b"
-                    android:textSize="12sp" />
+        </RelativeLayout>
 
-            </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/timeLineFrame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/timeFrame"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_5sdp">
 
-            <RelativeLayout
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@android:color/black"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_5sdp">
 
-                <FrameLayout
-                    android:id="@+id/timeLineFrame"
+                <com.video.trimmer.view.TimeLineView
+                    android:id="@+id/timeLineView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/black"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp">
+                    android:layout_height="wrap_content" />
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+            </FrameLayout>
 
-                        <com.video.trimmer.view.TimeLineView
-                            android:id="@+id/timeLineView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+            <SeekBar
+                android:id="@+id/handlerTop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:layout_marginBottom="@dimen/_4sdp"
+                android:max="1000"
+                android:progressDrawable="@android:color/transparent"
+                android:secondaryProgress="0"
+                android:thumb="@drawable/video_line_2"
+                android:visibility="gone" />
 
-                    </RelativeLayout>
+            <com.video.trimmer.view.RangeSeekBarView
+                android:id="@+id/timeLineBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_3sdp" />
 
-                </FrameLayout>
-
-                <SeekBar
-                    android:id="@+id/handlerTop"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="5dp"
-                    android:max="1000"
-                    android:progressDrawable="@android:color/transparent"
-                    android:secondaryProgress="0"
-                    android:thumb="@drawable/video_line_2"
-                    android:visibility="gone" />
-
-                <com.video.trimmer.view.RangeSeekBarView
-                    android:id="@+id/timeLineBar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/timeLineFrame"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp" />
-
-            </RelativeLayout>
-
-        </LinearLayout>
+        </RelativeLayout>
 
     </RelativeLayout>
 

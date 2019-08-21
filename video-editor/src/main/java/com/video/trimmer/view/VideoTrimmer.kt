@@ -17,9 +17,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.RelativeLayout
 import android.widget.SeekBar
-import android.widget.VideoView
 import com.video.trimmer.R
 import com.video.trimmer.interfaces.OnProgressVideoListener
 import com.video.trimmer.interfaces.OnRangeSeekBarListener
@@ -165,7 +163,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
 
     private fun setUpMargins() {
         val marge = timeLineBar.thumbs[0].widthBitmap
-        val lp = timeLineView.layoutParams as RelativeLayout.LayoutParams
+        val lp = timeLineView.layoutParams as LayoutParams
         lp.setMargins(marge, 0, marge, 0)
         timeLineView.layoutParams = lp
     }
@@ -346,51 +344,26 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         setProgressBarPosition(time)
     }
 
-    /**
-     * Set video information visibility.
-     * For now this is for debugging
-     *
-     * @param visible whether or not the videoInformation will be visible
-     */
     fun setVideoInformationVisibility(visible: Boolean): VideoTrimmer {
         timeFrame.visibility = if (visible) View.VISIBLE else View.GONE
         return this
     }
 
-    /**
-     * Listener for events such as trimming operation success and cancel
-     *
-     * @param onTrimVideoListener interface for events
-     */
     fun setOnTrimVideoListener(onTrimVideoListener: OnTrimVideoListener): VideoTrimmer {
         mOnTrimVideoListener = onTrimVideoListener
         return this
     }
 
-    /**
-     * Listener for some [VideoView] events
-     *
-     * @param onVideoListener interface for events
-     */
     fun setOnVideoListener(onVideoListener: OnVideoListener): VideoTrimmer {
         mOnVideoListener = onVideoListener
         return this
     }
 
-    /**
-     * Cancel all current operations
-     */
     fun destroy() {
         BackgroundExecutor.cancelAll("", true)
         UiThreadExecutor.cancelAll("")
     }
 
-    /**
-     * Set the maximum duration of the trimmed video.
-     * The trimmer interface wont allow the user to set duration longer than maxDuration
-     *
-     * @param maxDuration the maximum duration of the trimmed video in seconds
-     */
     fun setMaxDuration(maxDuration: Int): VideoTrimmer {
         mMaxDuration = maxDuration * 1000
         return this
@@ -406,11 +379,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
         return this
     }
 
-    /**
-     * Sets the uri of the video to be trimmer
-     *
-     * @param videoURI Uri of the video
-     */
     fun setVideoURI(videoURI: Uri): VideoTrimmer {
         mSrc = videoURI
         video_loader.setVideoURI(mSrc)
@@ -435,7 +403,6 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     companion object {
-        private val TAG = VideoTrimmer::class.java.simpleName
         private const val MIN_TIME_FRAME = 1000
         private const val SHOW_PROGRESS = 2
     }

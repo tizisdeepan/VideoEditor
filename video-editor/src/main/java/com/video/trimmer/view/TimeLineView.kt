@@ -13,7 +13,6 @@ import com.video.trimmer.utils.BackgroundExecutor
 import com.video.trimmer.utils.UiThreadExecutor
 import kotlin.math.ceil
 
-
 class TimeLineView @JvmOverloads constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
 
     private var mVideoUri: Uri? = null
@@ -45,19 +44,24 @@ class TimeLineView @JvmOverloads constructor(context: Context, attrs: AttributeS
         BackgroundExecutor.execute(object : BackgroundExecutor.Task("", 0L, "") {
             override fun execute() {
                 try {
+                    val threshold = 11
                     val thumbnailList = LongSparseArray<Bitmap>()
                     val mediaMetadataRetriever = MediaMetadataRetriever()
                     mediaMetadataRetriever.setDataSource(context, mVideoUri)
                     val videoLengthInMs = (Integer.parseInt(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)) * 1000).toLong()
-                    val thumbWidth = mHeightView
-                    val thumbHeight = mHeightView
-                    val numThumbs = ceil((viewWidth.toFloat() / thumbWidth).toDouble()).toInt()
+                    val frameHeight = mHeightView
+                    val initialBitmap = mediaMetadataRetriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                    val frameWidth = ((initialBitmap.width.toFloat() / initialBitmap.height.toFloat()) * frameHeight.toFloat()).toInt()
+                    var numThumbs = ceil((viewWidth.toFloat() / frameWidth)).toInt()
+                    if (numThumbs < threshold) numThumbs = threshold
+                    val cropWidth = viewWidth / threshold
                     val interval = videoLengthInMs / numThumbs
                     for (i in 0 until numThumbs) {
                         var bitmap = mediaMetadataRetriever.getFrameAtTime(i * interval, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
                         if (bitmap != null) {
                             try {
-                                bitmap = Bitmap.createScaledBitmap(bitmap, thumbWidth, thumbHeight, false)
+                                bitmap = Bitmap.createScaledBitmap(bitmap, frameWidth, frameHeight, false)
+                                bitmap = Bitmap.createBitmap(bitmap, 0, 0, cropWidth, bitmap.height)
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
@@ -86,8 +90,8 @@ class TimeLineView @JvmOverloads constructor(context: Context, attrs: AttributeS
         if (mBitmapList != null) {
             canvas.save()
             var x = 0
-            for (i in 0 until mBitmapList!!.size()) {
-                val bitmap = mBitmapList!!.get(i.toLong())
+            for (i in 0 until (mBitmapList?.size() ?: 0)) {
+                val bitmap = mBitmapList?.get(i.toLong())
                 if (bitmap != null) {
                     canvas.drawBitmap(bitmap, x.toFloat(), 0f, null)
                     x += bitmap.width

@@ -27,6 +27,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.writingminds:FFmpegAndroid:0.3.2'
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 }
 repositories {
     mavenCentral()

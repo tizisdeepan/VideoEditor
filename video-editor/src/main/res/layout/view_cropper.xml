@@ -6,7 +6,7 @@
     android:background="#2f3031"
     android:orientation="vertical">
 
-    <com.video.trimmer.utils.cropper.CropImageView
+    <com.theartofdev.edmodo.cropper.CropImageView
         android:id="@+id/cropFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -53,21 +53,22 @@
 
         </RelativeLayout>
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp">
+            android:layout_marginTop="@dimen/_12sdp"
+            android:layout_marginBottom="@dimen/_12sdp"
+            android:background="@android:color/black"
+            android:paddingStart="@dimen/_12sdp"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_12sdp"
+            android:paddingBottom="@dimen/_5sdp">
 
             <FrameLayout
                 android:id="@+id/timeLineFrame"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/black"
-                android:paddingTop="5dp"
-                android:paddingBottom="5dp">
+                android:background="@android:color/black">
 
                 <com.video.trimmer.view.TimeLineView
                     android:id="@+id/timeLineView"
@@ -81,15 +82,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="5dp"
                 android:progressDrawable="@android:color/transparent"
                 android:secondaryProgress="0"
                 android:thumb="@drawable/video_line_2" />
 
-        </FrameLayout>
+        </RelativeLayout>
 
     </LinearLayout>
 
