@@ -24,7 +24,7 @@ import com.video.trimmer.interfaces.OnRangeSeekBarListener
 import com.video.trimmer.interfaces.OnTrimVideoListener
 import com.video.trimmer.interfaces.OnVideoListener
 import com.video.trimmer.utils.*
-import kotlinx.android.synthetic.main.view_time_line.view.*
+import kotlinx.android.synthetic.main.view_trimmer.view.*
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.*
@@ -67,7 +67,7 @@ class VideoTrimmer @JvmOverloads constructor(context: Context, attrs: AttributeS
     }
 
     private fun init(context: Context) {
-        LayoutInflater.from(context).inflate(R.layout.view_time_line, this, true)
+        LayoutInflater.from(context).inflate(R.layout.view_trimmer, this, true)
         setUpListeners()
         setUpMargins()
     }
