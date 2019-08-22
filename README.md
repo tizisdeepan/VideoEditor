@@ -94,8 +94,8 @@ Developed By
 * Deepan Elango - <tizisdeepan@gmail.com>
 
 <a href="https://twitter.com/tizisdeepan">
-  <img alt="Follow me on Twitter" src="./screenshots/twitter.png" />
+  <img alt="Follow me on Twitter" src="./Screenshots/twitter.png" />
 </a>
 <a href="https://www.linkedin.com/in/tizisdeepan/">
-  <img alt="Add me to Linkedin" src="./screenshots/linkedin.png" />
+  <img alt="Add me to Linkedin" src="./Screenshots/linkedin.png" />
 </a>
