@@ -3,8 +3,8 @@
 [![](https://jitpack.io/v/tizisdeepan/videoeditor.svg)](https://jitpack.io/#tizisdeepan/videoeditor)
 
 <table>
-    <tr><td align="center"><img src="https://github.com/tizisdeepan/eventscalendar/blob/master/screenshots/ss1.png" alt="Single Selection Mode" width="100%"></td>
-    <td align="center"><img src="https://github.com/tizisdeepan/eventscalendar/blob/master/screenshots/ss2.png" alt="Range Selection Mode" width="100%"></td></tr>
+    <tr><td align="center"><img src="https://github.com/tizisdeepan/videoeditor/blob/master/screenshots/ve1.png" alt="Single Selection Mode" width="100%"></td>
+    <td align="center"><img src="https://github.com/tizisdeepan/videoeditor/blob/master/screenshots/ve2.png" alt="Range Selection Mode" width="100%"></td></tr>
 </table>
 
 ## About Library
