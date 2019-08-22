@@ -6,7 +6,9 @@ import android.util.Log
 import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg
 import com.github.hiteshsondhi88.libffmpeg.FFmpegLoadBinaryResponseHandler
+import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedException
 import com.video.trimmer.interfaces.OnCompressVideoListener
 import com.video.trimmer.interfaces.OnCropVideoListener
 import com.video.trimmer.interfaces.OnTrimVideoListener
@@ -14,6 +16,31 @@ import com.video.trimmer.interfaces.OnTrimVideoListener
 class VideoOptions(private var ctx: Context) {
     companion object {
         const val TAG = "VideoOptions"
+    }
+
+    fun initialize() {
+        val ffmpeg = FFmpeg.getInstance(ctx.applicationContext)
+        try {
+            ffmpeg.loadBinary(object : LoadBinaryResponseHandler() {
+                override fun onFinish() {
+                    super.onFinish()
+                }
+
+                override fun onSuccess() {
+                    super.onSuccess()
+                }
+
+                override fun onFailure() {
+                    super.onFailure()
+                }
+
+                override fun onStart() {
+                    super.onStart()
+                }
+            })
+        } catch (e: FFmpegNotSupportedException) {
+            // Handle if FFmpeg is not supported by device
+        }
     }
 
     fun trimVideo(startPosition: String, endPosition: String, inputPath: String, outputPath: String, outputFileUri: Uri, listener: OnTrimVideoListener?) {
