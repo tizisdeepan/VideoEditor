@@ -74,8 +74,7 @@ class TimeLineView @JvmOverloads constructor(context: Context, attrs: AttributeS
                     Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e)
                 }
             }
-        }
-        )
+        })
     }
 
     private fun returnBitmaps(thumbnailList: LongSparseArray<Bitmap>) {

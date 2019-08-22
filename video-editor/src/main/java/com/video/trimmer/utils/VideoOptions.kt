@@ -18,31 +18,6 @@ class VideoOptions(private var ctx: Context) {
         const val TAG = "VideoOptions"
     }
 
-    fun initialize() {
-        val ffmpeg = FFmpeg.getInstance(ctx.applicationContext)
-        try {
-            ffmpeg.loadBinary(object : LoadBinaryResponseHandler() {
-                override fun onFinish() {
-                    super.onFinish()
-                }
-
-                override fun onSuccess() {
-                    super.onSuccess()
-                }
-
-                override fun onFailure() {
-                    super.onFailure()
-                }
-
-                override fun onStart() {
-                    super.onStart()
-                }
-            })
-        } catch (e: FFmpegNotSupportedException) {
-            // Handle if FFmpeg is not supported by device
-        }
-    }
-
     fun trimVideo(startPosition: String, endPosition: String, inputPath: String, outputPath: String, outputFileUri: Uri, listener: OnTrimVideoListener?) {
         val ff = FFmpeg.getInstance(ctx)
         ff.loadBinary(object : FFmpegLoadBinaryResponseHandler {
