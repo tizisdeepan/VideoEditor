@@ -268,9 +268,9 @@ class RangeSeekBarView @JvmOverloads constructor(context: Context, attrs: Attrib
         if (thumbs.isNotEmpty()) {
             for (th in thumbs) {
                 if (th.index == 0) {
-                    canvas.drawBitmap(th.bitmap, th.pos + paddingLeft, 0f, null)
+                    if (th.bitmap != null) canvas.drawBitmap(th.bitmap!!, th.pos + paddingLeft, 0f, null)
                 } else {
-                    canvas.drawBitmap(th.bitmap, th.pos - paddingRight, 0f, null)
+                    if (th.bitmap != null) canvas.drawBitmap(th.bitmap!!, th.pos - paddingRight, 0f, null)
                 }
             }
         }

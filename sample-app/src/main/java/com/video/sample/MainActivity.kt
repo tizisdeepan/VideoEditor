@@ -19,8 +19,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        galleryButton.setOnClickListener { pickFromGallery(REQUEST_VIDEO_TRIMMER) }
-        cameraButton.setOnClickListener { pickFromGallery(REQUEST_VIDEO_CROPPER) }
+        trimmerButton.setOnClickListener { pickFromGallery(REQUEST_VIDEO_TRIMMER) }
+        cropperButton.setOnClickListener { pickFromGallery(REQUEST_VIDEO_CROPPER) }
     }
 
     private fun pickFromGallery(intentCode: Int) {

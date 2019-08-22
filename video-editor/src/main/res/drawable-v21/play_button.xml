@@ -4,6 +4,6 @@
     android:color="@color/black_translucent">
 
     <item
-        android:drawable="@drawable/icon_video_play" />
+        android:drawable="@drawable/ic_play_video" />
 
 </ripple>

@@ -84,7 +84,7 @@
                 android:layout_gravity="center_horizontal"
                 android:progressDrawable="@android:color/transparent"
                 android:secondaryProgress="0"
-                android:thumb="@drawable/video_line_2" />
+                android:thumb="@drawable/seek_line" />
 
         </RelativeLayout>
 

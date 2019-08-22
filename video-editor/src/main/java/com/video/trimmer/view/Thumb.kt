@@ -42,13 +42,13 @@ class Thumb private constructor() {
                 val th = Thumb()
                 th.index = i
                 if (i == 0) {
-                    val resImageLeft = R.drawable.apptheme_text_select_handle_left
+                    val resImageLeft = R.drawable.seek_left_handle
                     th.bitmap = BitmapFactory.decodeResource(resources, resImageLeft)
-//                    th.bitmap = drawableToBitmap(resources.getDrawable(R.drawable.apptheme_text_select_handle_left))
+//                    th.bitmap = drawableToBitmap(resources.getDrawable(R.drawable.seek_left_handle))
                 } else {
-                    val resImageRight = R.drawable.apptheme_text_select_handle_right
+                    val resImageRight = R.drawable.seek_right_handle
                     th.bitmap = BitmapFactory.decodeResource(resources, resImageRight)
-//                    th.bitmap = drawableToBitmap(resources.getDrawable(R.drawable.apptheme_text_select_handle_right))
+//                    th.bitmap = drawableToBitmap(resources.getDrawable(R.drawable.seek_right_handle))
                 }
                 thumbs.add(th)
             }
