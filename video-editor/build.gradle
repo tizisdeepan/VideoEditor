@@ -24,7 +24,6 @@ dependencies {
     implementation 'org.jetbrains.anko:anko-sqlite:0.10.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.googlecode.mp4parser:isoparser:1.1.20'
     implementation 'com.writingminds:FFmpegAndroid:0.3.2'
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 }
