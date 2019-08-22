@@ -13,18 +13,36 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <ImageButton
+        <FrameLayout
             android:id="@+id/cropperButton"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@drawable/background_button" />
+            android:layout_width="@dimen/_70sdp"
+            android:layout_height="@dimen/_70sdp"
+            android:background="@drawable/background_button">
 
-        <ImageButton
+            <ImageView
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_30sdp"
+                android:layout_gravity="center"
+                android:background="@drawable/background_button"
+                android:src="@drawable/ic_crop" />
+
+        </FrameLayout>
+
+        <FrameLayout
             android:id="@+id/trimmerButton"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@drawable/background_button"
-            android:src="@drawable/ic_trim" />
+            android:layout_width="@dimen/_70sdp"
+            android:layout_height="@dimen/_70sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:background="@drawable/background_button">
+
+            <ImageView
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_30sdp"
+                android:layout_gravity="center"
+                android:background="@drawable/background_button"
+                android:src="@drawable/ic_trim" />
+
+        </FrameLayout>
 
         <Space
             android:layout_width="16dp"
