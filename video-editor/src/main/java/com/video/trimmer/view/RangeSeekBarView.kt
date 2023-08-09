@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
-import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -49,12 +48,12 @@ class RangeSeekBarView @JvmOverloads constructor(context: Context, attrs: Attrib
 
         mFirstRun = true
 
-        val shadowColor = ContextCompat.getColor(context, R.color.shadow_color)
+        val shadowColor = context.getColor( R.color.shadow_color)
         mShadow.isAntiAlias = true
         mShadow.color = shadowColor
         mShadow.alpha = 177
 
-        val lineColor = ContextCompat.getColor(context, R.color.line_color)
+        val lineColor = context.getColor( R.color.line_color)
         mLine.isAntiAlias = true
         mLine.color = lineColor
         mLine.alpha = 200

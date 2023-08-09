@@ -14,71 +14,95 @@ import androidx.core.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.video.trimmer.interfaces.OnTrimVideoListener
+import androidx.lifecycle.lifecycleScope
+import com.video.sample.databinding.ActivityTrimmerBinding
+import com.video.trimmer.interfaces.OnVideoEditedListener
 import com.video.trimmer.interfaces.OnVideoListener
-import kotlinx.android.synthetic.main.activity_trimmer.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 
-class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListener {
+class TrimmerActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListener {
 
-    private val progressDialog: VideoProgressIndeterminateDialog by lazy { VideoProgressIndeterminateDialog(this, "Cropping video. Please wait...") }
+    private val progressDialog: VideoProgressIndeterminateDialog by lazy {
+        VideoProgressIndeterminateDialog(
+            this,
+            "Cropping video. Please wait..."
+        )
+    }
+    private lateinit var binding: ActivityTrimmerBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_trimmer)
+        binding = ActivityTrimmerBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         setupPermissions {
             val extraIntent = intent
             var path = ""
-            if (extraIntent != null) path = extraIntent.getStringExtra(MainActivity.EXTRA_VIDEO_PATH)
-            videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMI_BOLD])
-                    .setOnTrimVideoListener(this)
-                    .setOnVideoListener(this)
-                    .setVideoURI(Uri.parse(path))
-                    .setVideoInformationVisibility(true)
-                    .setMaxDuration(10)
-                    .setMinDuration(2)
-                    .setDestinationPath(Environment.getExternalStorageDirectory().toString() + File.separator + "Zoho Social" + File.separator + "Videos" + File.separator)
+            if (extraIntent != null) path =
+                extraIntent.getStringExtra(MainActivity.EXTRA_VIDEO_PATH).toString()
+            binding.videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMI_BOLD])
+                .setOnTrimVideoListener(this)
+                .setOnVideoListener(this)
+                .setVideoURI(Uri.parse(path))
+                .setVideoInformationVisibility(true)
+                .setMinDuration(2)
+                .setDestinationPath(Environment.getExternalStorageDirectory().path + File.separator + Environment.DIRECTORY_MOVIES)
         }
 
-        back.setOnClickListener {
-            videoTrimmer.onCancelClicked()
+        binding.back.setOnClickListener {
+            binding.videoTrimmer.onCancelClicked()
         }
 
-        save.setOnClickListener {
-            videoTrimmer.onSaveClicked()
+
+        binding.save.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                binding.videoTrimmer.onSaveClicked()
+            }
         }
     }
 
     override fun onTrimStarted() {
-        RunOnUiThread(this).safely {
-            Toast.makeText(this, "Started Trimming", Toast.LENGTH_SHORT).show()
+        val context = applicationContext
+        lifecycleScope.launch(Dispatchers.Main) {
+            Toast.makeText(context, "Started Trimming", Toast.LENGTH_SHORT).show()
             progressDialog.show()
         }
     }
 
     override fun getResult(uri: Uri) {
-        RunOnUiThread(this).safely {
-            Toast.makeText(this, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
+        val context = applicationContext
+        lifecycleScope.launch(Dispatchers.Main) {
+            Toast.makeText(context, "Video saved at ${uri.path}", Toast.LENGTH_SHORT).show()
             progressDialog.dismiss()
+
             val mediaMetadataRetriever = MediaMetadataRetriever()
-            mediaMetadataRetriever.setDataSource(this, uri)
-            val duration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION).toLong()
-            val width = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH).toLong()
-            val height = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT).toLong()
+            mediaMetadataRetriever.setDataSource(context, uri)
+            val duration =
+                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                    ?.toLong()
+            val width =
+                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+                    ?.toLong()
+            val height =
+                mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+                    ?.toLong()
             val values = ContentValues()
             values.put(MediaStore.Video.Media.DATA, uri.path)
             values.put(MediaStore.Video.VideoColumns.DURATION, duration)
             values.put(MediaStore.Video.VideoColumns.WIDTH, width)
             values.put(MediaStore.Video.VideoColumns.HEIGHT, height)
-            val id = ContentUris.parseId(contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values))
+            val id = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values)
+                ?.let { ContentUris.parseId(it) }
             Log.e("VIDEO ID", id.toString())
         }
     }
 
     override fun cancelAction() {
-        RunOnUiThread(this).safely {
-            videoTrimmer.destroy()
+        lifecycleScope.launch(Dispatchers.Main) {
+            binding.videoTrimmer.destroy()
             finish()
         }
     }
@@ -88,26 +112,41 @@ class TrimmerActivity : AppCompatActivity(), OnTrimVideoListener, OnVideoListene
     }
 
     override fun onVideoPrepared() {
-        RunOnUiThread(this).safely {
-            Toast.makeText(this, "onVideoPrepared", Toast.LENGTH_SHORT).show()
-        }
+        Toast.makeText(this, "onVideoPrepared", Toast.LENGTH_SHORT).show()
     }
 
     lateinit var doThis: () -> Unit
     private fun setupPermissions(doSomething: () -> Unit) {
-        val writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        val readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+        val writePermission =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        val readPermission =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
         doThis = doSomething
         if (writePermission != PackageManager.PERMISSION_GRANTED && readPermission != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), 101)
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ),
+                101
+            )
         } else doThis()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             101 -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    PermissionsDialog(this@TrimmerActivity, "To continue, give Zoho Social access to your Photos.").show()
+                    PermissionsDialog(
+                        this@TrimmerActivity,
+                        "To continue, give Zoho Social access to your Photos."
+                    ).show()
                 } else doThis()
             }
         }

@@ -2,11 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#2f3031"
     android:orientation="vertical">
 
     <RelativeLayout
-        android:id="@+id/layout_surface_view"
+        android:id="@+id/layoutSurfaceView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/layout"
@@ -14,14 +15,26 @@
         android:orientation="vertical">
 
         <VideoView
-            android:id="@+id/video_loader"
+            android:id="@+id/videoLoader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true" />
+            android:layout_centerVertical="true"/>
+
+        <com.canhub.cropper.CropImageView
+            android:id="@+id/cropFrame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cropInitialCropWindowPaddingRatio="0"
+            app:cropMultiTouchEnabled="false"
+            app:cropScaleType="centerInside"
+            app:cropTouchRadius="44dp"
+            app:cropAutoZoomEnabled="false"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"/>
 
         <ImageView
-            android:id="@+id/icon_video_play"
+            android:id="@+id/iconVideoPlay"
             android:layout_width="@dimen/_50sdp"
             android:layout_height="@dimen/_50sdp"
             android:layout_centerHorizontal="true"

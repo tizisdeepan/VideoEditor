@@ -10,17 +10,21 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.video.sample.databinding.ActivityMainBinding
 import com.video.trimmer.utils.FileUtils
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        trimmerButton.setOnClickListener { pickFromGallery(REQUEST_VIDEO_TRIMMER) }
-        cropperButton.setOnClickListener { pickFromGallery(REQUEST_VIDEO_CROPPER) }
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+        binding.trimmerButton.setOnClickListener { pickFromGallery(REQUEST_VIDEO_TRIMMER) }
+        binding.cropperButton.setOnClickListener { pickFromGallery(REQUEST_VIDEO_CROPPER) }
     }
 
     private fun pickFromGallery(intentCode: Int) {

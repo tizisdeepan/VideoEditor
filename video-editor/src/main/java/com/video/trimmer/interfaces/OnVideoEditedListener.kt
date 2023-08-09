@@ -2,7 +2,7 @@ package com.video.trimmer.interfaces
 
 import android.net.Uri
 
-interface OnTrimVideoListener {
+interface OnVideoEditedListener {
     fun onTrimStarted()
     fun getResult(uri: Uri)
     fun cancelAction()
