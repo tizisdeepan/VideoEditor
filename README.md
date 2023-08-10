@@ -1,6 +1,6 @@
 # Video Trimmer
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0.html)
-[![](https://jitpack.io/v/tizisdeepan/videoeditor.svg)](https://jitpack.io/#mohamed0017/SimpleVideoEditor)
+[![](https://jitpack.io/v/tizisdeepan/SimpleVideoEditor.svg)](https://jitpack.io/#mohamed0017/SimpleVideoEditor)
 
 <table>
     <tr><td align="center"><img src="https://github.com/tizisdeepan/VideoEditor/blob/master/Screenshots/ve1.png" alt="Video Trimmer" width="100%"></td>
