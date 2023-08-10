@@ -16,7 +16,7 @@ FFmpeg is a powerful multimedia framework which allows us to decode, encode, tra
 ### [1] In your app module gradle file
 ```gradle
 dependencies {
-    implementation 'com.github.tizisdeepan:videoeditor:<latest_version>'
+ implementation 'com.github.mohamed0017:SimpleVideoEditor:<latest_version>'
 }
 ```
 
@@ -83,14 +83,14 @@ videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMI_
                     .setVideoInformationVisibility(true)
                     .setMaxDuration(10)
                     .setMinDuration(2)
-                    .setDestinationPath(Environment.getExternalStorageDirectory().toString() + File.separator + "temp" + File.separator + "Videos" + File.separator)
+                    .setDestinationPath(Environment.getExternalStorageDirectory().path + File.separator + Environment.DIRECTORY_MOVIES)
 ```
 ### [8] Create instances and set default values for the VideoCropper in your Activity/ Fragment
 ```kotlin
  videoCropper.setVideoURI(Uri.parse(path))
                     .setOnCropVideoListener(this)
                     .setMinMaxRatios(0.3f, 3f)
-                    .setDestinationPath(Environment.getExternalStorageDirectory().toString() + File.separator + "temp" + File.separator + "Videos" + File.separator)
+                    .setDestinationPath(Environment.getExternalStorageDirectory().path + File.separator + Environment.DIRECTORY_MOVIES)
 ```
 
 Voila! You have implemented an awesome Video Editor for your Android Project now!
