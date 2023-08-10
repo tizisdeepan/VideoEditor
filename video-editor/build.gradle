@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 34
@@ -33,4 +34,18 @@ dependencies {
 }
 repositories {
     mavenCentral()
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.github.mohamed0017'
+            artifactId = 'SimpleVideoEditor'
+            version = '1.0.0'
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
 }
