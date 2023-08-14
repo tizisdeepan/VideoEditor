@@ -8,7 +8,6 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import com.video.sample.databinding.ActivityTrimmerBinding
 import com.video.sample.databinding.DialogPermissionsBinding
 
 class PermissionsDialog(var ctx: Context, var msg: String) : Dialog(ctx) {

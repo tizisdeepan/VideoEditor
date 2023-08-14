@@ -34,7 +34,7 @@
         </activity>
 
         <activity
-            android:name=".TrimmerActivity" />
+            android:name=".EditorActivity" />
         <activity
             android:name=".CropperActivity" />
     </application>

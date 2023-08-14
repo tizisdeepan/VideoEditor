@@ -31,6 +31,7 @@ import com.video.trimmer.utils.TrimVideoUtils
 import com.video.trimmer.utils.UiThreadExecutor
 import com.video.trimmer.utils.VideoOptions
 import com.video.trimmer.utils.drawableToBitmap
+import com.video.trimmer.utils.fileFromContentUri
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.Calendar
@@ -61,8 +62,10 @@ class VideoTrimmer @JvmOverloads constructor(
     private var mEndPosition = 0f
     private var mResetSeekBar = true
     private val mMessageHandler = MessageHandler(this)
-    private var videoWidth: Int = 0
-    private var videoHeight: Int = 0
+    private var originalVideoWidth: Int = 0
+    private var originalVideoHeight: Int = 0
+    private var videoPlayerWidth: Int = 0
+    private var videoPlayerHeight: Int = 0
     private var destinationPath: String
         get() {
             if (mFinalPath == null) {
@@ -186,17 +189,20 @@ class VideoTrimmer @JvmOverloads constructor(
         binding.timeLineView.layoutParams = lp
     }
 
-    fun onSaveClicked() {
-        mOnVideoEditedListener?.onTrimStarted()
+    fun handleUi() {
         binding.iconVideoPlay.visibility = View.VISIBLE
         binding.videoLoader.pause()
+    }
+
+    fun onSaveClicked() {
+        mOnVideoEditedListener?.onTrimStarted()
 
         val mediaMetadataRetriever = MediaMetadataRetriever()
         mediaMetadataRetriever.setDataSource(context, mSrc)
         val metaDataKeyDuration =
             java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
 
-        val file = File(mSrc.path ?: "")
+        val file = mSrc.fileFromContentUri(context)
 
         if (mTimeVideo < MIN_TIME_FRAME) {
             if (metaDataKeyDuration - mEndPosition > MIN_TIME_FRAME - mTimeVideo) mEndPosition += MIN_TIME_FRAME - mTimeVideo
@@ -243,25 +249,34 @@ class VideoTrimmer @JvmOverloads constructor(
             java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
         Log.e("FRAME RATE", frameRate.toString())
         Log.e("FRAME COUNT", (duration / 1000 * frameRate).toString())
-        saveCrop()
+        handleVideoCrop(file)
     }
 
-    private fun saveCrop() {
+    private fun handleVideoCrop(file: File) {
         val rect = binding.cropFrame.cropRect ?: return
         val width = abs(rect.left - rect.right)
         val height = abs(rect.top - rect.bottom)
         val x = rect.left
         val y = rect.top
-        val file = File(mSrc.path ?: "")
         val root = File(destinationPath)
         root.mkdirs()
-        val outputFileUri = Uri.fromFile(File(root, "t_${Calendar.getInstance().timeInMillis}_" + file.nameWithoutExtension + ".mp4"))
+        val outputFileUri = Uri.fromFile(
+            File(
+                root,
+                "t_${Calendar.getInstance().timeInMillis}_" + file.nameWithoutExtension + ".mp4"
+            )
+        )
         val outPutPath = RealPathUtil.realPathFromUriApi19(context, outputFileUri)
-            ?: File(root, "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path?.substring(mSrc.path!!.lastIndexOf("/") + 1)).absolutePath
+            ?: File(
+                root,
+                "t_${Calendar.getInstance().timeInMillis}_" + mSrc.path?.substring(
+                    mSrc.path!!.lastIndexOf("/") + 1
+                )
+            ).absolutePath
         val extractor = MediaExtractor()
         var frameRate = 24
         try {
-            extractor.setDataSource(file.path)
+            extractor.setDataSource(file.absolutePath)
             val numTracks = extractor.trackCount
             for (i in 0..numTracks) {
                 val format = extractor.getTrackFormat(i)
@@ -279,14 +294,29 @@ class VideoTrimmer @JvmOverloads constructor(
         }
         val mediaMetadataRetriever = MediaMetadataRetriever()
         mediaMetadataRetriever.setDataSource(context, mSrc)
-        val duration = java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
+        val duration =
+            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                ?.let { java.lang.Long.parseLong(it) } ?: 0
         val frameCount = duration / 1000 * frameRate
+        val xPercentage = (x * 100) / videoPlayerWidth
+        val yPercentage = (y * 100) / videoPlayerHeight
+
+        var width2: Int = width
+        var height2: Int = height
+        var x2: Int = x
+        var y2: Int = y
+
+        width2 = (width * originalVideoWidth) / videoPlayerWidth
+        x2 = originalVideoWidth * xPercentage / 100
+
+        height2 = (height * originalVideoHeight) / videoPlayerHeight
+        y2 = originalVideoHeight * (yPercentage + 1)  / 100
 
         VideoOptions(context).trimAndCropVideo(
-            width,
-            height,
-            x,
-            y,
+            width2,
+            height2,
+            x2,
+            y2,
             frameCount.toInt(),
             TrimVideoUtils.stringForTime(mStartPosition),
             TrimVideoUtils.stringForTime(mEndPosition),
@@ -296,7 +326,6 @@ class VideoTrimmer @JvmOverloads constructor(
             mOnVideoEditedListener
         )
     }
-
 
     private fun onClickVideoPlayPause() {
         if (binding.videoLoader.isPlaying) {
@@ -335,16 +364,17 @@ class VideoTrimmer @JvmOverloads constructor(
             lp.width = (videoProportion * screenHeight.toFloat()).toInt()
             lp.height = screenHeight
         }
+        videoPlayerWidth = lp.width
+        videoPlayerHeight = lp.height
         binding.videoLoader.layoutParams = lp
+        setupCropper(lp.width, lp.height)
 
         binding.iconVideoPlay.visibility = View.VISIBLE
-
         mDuration = binding.videoLoader.duration.toFloat()
         setSeekBarPosition()
-
         setTimeFrames()
-
         mOnVideoListener?.onVideoPrepared()
+
     }
 
     private fun setSeekBarPosition() {
@@ -482,25 +512,36 @@ class VideoTrimmer @JvmOverloads constructor(
         binding.timeLineView.setVideo(mSrc)
         val mediaMetadataRetriever = MediaMetadataRetriever()
         mediaMetadataRetriever.setDataSource(context, mSrc)
-        videoWidth =
-            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
-                ?.toInt() ?: 0
-        videoHeight =
-            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-                ?.toInt() ?: 0
-        setupCropper()
+        val metaDateWidth =  mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+            ?.toInt() ?: 0
+        val metaDataHeight =  mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+            ?.toInt() ?: 0
+
+        //If the rotation is 90 or 270 the width and height will be transposed.
+        when(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)?.toInt()) {
+              90,270 -> {
+                originalVideoWidth = metaDataHeight
+                originalVideoHeight = metaDateWidth
+            }
+            else -> {
+                originalVideoWidth = metaDateWidth
+                originalVideoHeight = metaDataHeight
+            }
+        }
+
         return this
     }
 
-    private fun setupCropper() {
+    private fun setupCropper(width: Int, height: Int) {
         binding.cropFrame.setFixedAspectRatio(false)
         binding.cropFrame.layoutParams = binding.cropFrame.layoutParams?.let {
-            it.width = videoWidth
-            it.height = videoHeight
+            it.width = width
+            it.height = height
             it
         }
         binding.cropFrame.setImageBitmap(
-            context.getDrawable(android.R.color.transparent)?.let { drawableToBitmap(it, videoWidth, videoHeight) })
+            context.getDrawable(android.R.color.transparent)
+                ?.let { drawableToBitmap(it, width, height) })
     }
 
     fun setTextTimeSelectionTypeface(tf: Typeface?): VideoTrimmer {

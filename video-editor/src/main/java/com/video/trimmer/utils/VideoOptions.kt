@@ -36,7 +36,7 @@ class VideoOptions(private var ctx: Context) {
             .append(" -threads ")
             .append(" 5 ")
             .append(" -preset ")
-            .append(" ultrafast ")
+            .append(" veryslow ")
             .append(" -strict ")
             .append(" -2 ")
             .append(" -c:a copy ").append(outputPath)

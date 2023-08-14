@@ -15,14 +15,14 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.video.sample.databinding.ActivityTrimmerBinding
+import com.video.sample.databinding.ActivityVideoEditorBinding
 import com.video.trimmer.interfaces.OnVideoEditedListener
 import com.video.trimmer.interfaces.OnVideoListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
-class TrimmerActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListener {
+class EditorActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListener {
 
     private val progressDialog: VideoProgressIndeterminateDialog by lazy {
         VideoProgressIndeterminateDialog(
@@ -30,11 +30,11 @@ class TrimmerActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListe
             "Cropping video. Please wait..."
         )
     }
-    private lateinit var binding: ActivityTrimmerBinding
+    private lateinit var binding: ActivityVideoEditorBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityTrimmerBinding.inflate(layoutInflater)
+        binding = ActivityVideoEditorBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
@@ -58,6 +58,7 @@ class TrimmerActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListe
 
 
         binding.save.setOnClickListener {
+            binding.videoTrimmer.handleUi()
             lifecycleScope.launch(Dispatchers.IO) {
                 binding.videoTrimmer.onSaveClicked()
             }
@@ -108,6 +109,11 @@ class TrimmerActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListe
     }
 
     override fun onError(message: String) {
+        val context = applicationContext
+        lifecycleScope.launch(Dispatchers.Main) {
+            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
+            progressDialog.dismiss()
+        }
         Log.e("ERROR", message)
     }
 
@@ -144,7 +150,7 @@ class TrimmerActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListe
             101 -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     PermissionsDialog(
-                        this@TrimmerActivity,
+                        this@EditorActivity,
                         "To continue, give Zoho Social access to your Photos."
                     ).show()
                 } else doThis()

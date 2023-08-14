@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.video.sample.databinding.ActivityMainBinding
-import com.video.trimmer.utils.FileUtils
 
 class MainActivity : AppCompatActivity() {
 
@@ -46,27 +45,14 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(this@MainActivity, R.string.toast_cannot_retrieve_selected_video, Toast.LENGTH_SHORT).show()
                 }
-            } else if (requestCode == REQUEST_VIDEO_CROPPER) {
-                val selectedUri = data!!.data
-                if (selectedUri != null) {
-                    startCropActivity(selectedUri)
-                } else {
-                    Toast.makeText(this@MainActivity, R.string.toast_cannot_retrieve_selected_video, Toast.LENGTH_SHORT).show()
-                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun startTrimActivity(uri: Uri) {
-        val intent = Intent(this, TrimmerActivity::class.java)
-        intent.putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this, uri))
-        startActivity(intent)
-    }
-
-    private fun startCropActivity(uri: Uri) {
-        val intent = Intent(this, CropperActivity::class.java)
-        intent.putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this, uri))
+        val intent = Intent(this, EditorActivity::class.java)
+        intent.putExtra(EXTRA_VIDEO_PATH, uri.toString())
         startActivity(intent)
     }
 
@@ -87,6 +73,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             101 -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
