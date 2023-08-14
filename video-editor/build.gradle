@@ -43,7 +43,7 @@ publishing {
         release(MavenPublication) {
             groupId = 'com.github.mohamed0017'
             artifactId = 'SimpleVideoEditor'
-            version = '1.0.2'
+            version = '1.0.3'
 
             afterEvaluate {
                 from components.release
