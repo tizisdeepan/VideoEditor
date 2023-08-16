@@ -18,7 +18,7 @@ class VideoOptions(private var ctx: Context) {
         height: Int,
         x: Int,
         y: Int,
-        frameCount: Int,
+        bitrate: Int,
         startPosition: String,
         endPosition: String,
         inputPath: String,
@@ -33,16 +33,12 @@ class VideoOptions(private var ctx: Context) {
             .append(" -to ").append(endPosition)
             .append(" -filter:v ")
             .append(" crop=").append("$width:$height:$x:$y")
-            .append(" -threads ")
-            .append(" 5 ")
-            .append(" -preset ")
-            .append(" veryslow ")
-            .append(" -strict ")
-            .append(" -2 ")
+            .append(" -vcodec libx264 -b ${bitrate}M -preset ultrafast ")
             .append(" -c:a copy ").append(outputPath)
+
         val session = FFmpegKit.execute(command.toString())
         if (ReturnCode.isSuccess(session.returnCode)) {
-            // SUCCESS
+            // SUCCESS2
              listener?.getResult(outputFileUri)
             Log.e(TAG, "onFinish: ")
         } else if (ReturnCode.isCancel(session.returnCode)) {

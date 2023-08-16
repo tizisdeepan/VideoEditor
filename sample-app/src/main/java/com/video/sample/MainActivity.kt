@@ -52,14 +52,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun startTrimActivity(uri: Uri) {
         val intent = Intent(this, EditorActivity::class.java)
-        intent.putExtra(EXTRA_VIDEO_PATH, uri.toString())
+        intent.putExtra(EXTRA_VIDEO_URI_STRING, uri.toString())
         startActivity(intent)
     }
 
     companion object {
         private const val REQUEST_VIDEO_TRIMMER = 0x01
         private const val REQUEST_VIDEO_CROPPER = 0x02
-        internal const val EXTRA_VIDEO_PATH = "EXTRA_VIDEO_PATH"
+        internal const val EXTRA_VIDEO_URI_STRING = "EXTRA_VIDEO_PATH"
     }
 
     lateinit var doThis: () -> Unit

@@ -94,7 +94,10 @@
                 <com.video.trimmer.view.TimeLineView
                     android:id="@+id/timeLineView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_37sdp"
+                    android:layout_marginEnd="@dimen/_37sdp"
+                    />
 
             </FrameLayout>
 
@@ -106,7 +109,7 @@
                 android:layout_marginStart="@dimen/_12sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_12sdp"
-                android:layout_marginBottom="@dimen/_4sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
                 android:max="1000"
                 android:progressDrawable="@android:color/transparent"
                 android:secondaryProgress="0"
@@ -117,8 +120,10 @@
                 android:id="@+id/timeLineBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
                 android:layout_marginTop="@dimen/_4sdp"
-                android:layout_marginBottom="@dimen/_3sdp" />
+                android:layout_marginBottom="@dimen/_2sdp" />
 
         </RelativeLayout>
 

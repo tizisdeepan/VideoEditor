@@ -29,10 +29,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.arthenica:ffmpeg-kit-full:5.1'
+    implementation 'com.arthenica:ffmpeg-kit-min-gpl:5.1'
     implementation 'com.vanniktech:android-image-cropper:4.5.0'
-    implementation 'com.github.starry-shivam:FileUtils:1.0.0'
-
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
 }
 repositories {
     mavenCentral()
@@ -43,7 +42,7 @@ publishing {
         release(MavenPublication) {
             groupId = 'com.github.mohamed0017'
             artifactId = 'SimpleVideoEditor'
-            version = '1.0.3'
+            version = '1.0.5'
 
             afterEvaluate {
                 from components.release

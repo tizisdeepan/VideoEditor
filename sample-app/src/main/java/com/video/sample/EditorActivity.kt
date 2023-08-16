@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import com.video.sample.databinding.ActivityVideoEditorBinding
 import com.video.trimmer.interfaces.OnVideoEditedListener
 import com.video.trimmer.interfaces.OnVideoListener
+import com.video.trimmer.utils.fileFromContentUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -32,6 +33,7 @@ class EditorActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListen
     }
     private lateinit var binding: ActivityVideoEditorBinding
 
+    private var tempFile: File? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityVideoEditorBinding.inflate(layoutInflater)
@@ -40,13 +42,19 @@ class EditorActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListen
 
         setupPermissions {
             val extraIntent = intent
-            var path = ""
-            if (extraIntent != null) path =
-                extraIntent.getStringExtra(MainActivity.EXTRA_VIDEO_PATH).toString()
+            val uri: Uri?
+            if (extraIntent != null) {
+                uri = Uri.parse(
+                    extraIntent.getStringExtra(MainActivity.EXTRA_VIDEO_URI_STRING).toString()
+                )
+                tempFile = uri?.fileFromContentUri(this)
+            }
+
             binding.videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMI_BOLD])
                 .setOnTrimVideoListener(this)
                 .setOnVideoListener(this)
-                .setVideoURI(Uri.parse(path))
+                .setVideoURI(Uri.parse(tempFile?.path))
+                .setBitrate(2)
                 .setVideoInformationVisibility(true)
                 .setMinDuration(2)
                 .setDestinationPath(Environment.getExternalStorageDirectory().path + File.separator + Environment.DIRECTORY_MOVIES)
@@ -58,10 +66,7 @@ class EditorActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListen
 
 
         binding.save.setOnClickListener {
-            binding.videoTrimmer.handleUi()
-            lifecycleScope.launch(Dispatchers.IO) {
-                binding.videoTrimmer.onSaveClicked()
-            }
+            binding.videoTrimmer.onSaveClicked()
         }
     }
 
@@ -99,13 +104,31 @@ class EditorActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListen
                 ?.let { ContentUris.parseId(it) }
             Log.e("VIDEO ID", id.toString())
         }
+
     }
 
     override fun cancelAction() {
         lifecycleScope.launch(Dispatchers.Main) {
             binding.videoTrimmer.destroy()
+            // delete temp file after use it
+            tempFile?.delete()
             finish()
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.videoTrimmer.onPause()
+    }
+    override fun onResume() {
+        super.onResume()
+        binding.videoTrimmer.onResume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // delete temp file after use it
+        tempFile?.delete()
     }
 
     override fun onError(message: String) {
@@ -115,6 +138,8 @@ class EditorActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListen
             progressDialog.dismiss()
         }
         Log.e("ERROR", message)
+        // delete temp file after use it
+        tempFile?.delete()
     }
 
     override fun onVideoPrepared() {

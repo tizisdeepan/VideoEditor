@@ -19,6 +19,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.SeekBar
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.video.trimmer.R
 import com.video.trimmer.databinding.ViewTrimmerBinding
 import com.video.trimmer.interfaces.OnProgressVideoListener
@@ -31,13 +33,14 @@ import com.video.trimmer.utils.TrimVideoUtils
 import com.video.trimmer.utils.UiThreadExecutor
 import com.video.trimmer.utils.VideoOptions
 import com.video.trimmer.utils.drawableToBitmap
-import com.video.trimmer.utils.fileFromContentUri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.Calendar
 import kotlin.math.abs
 
-class VideoTrimmer @JvmOverloads constructor(
+class VideoEditor @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet,
     defStyleAttr: Int = 0
@@ -66,6 +69,9 @@ class VideoTrimmer @JvmOverloads constructor(
     private var originalVideoHeight: Int = 0
     private var videoPlayerWidth: Int = 0
     private var videoPlayerHeight: Int = 0
+    private var bitRate: Int = 2
+    private var isVideoPrepared = false
+    private var videoPlayerCurrentPosition = 0
     private var destinationPath: String
         get() {
             if (mFinalPath == null) {
@@ -189,12 +195,9 @@ class VideoTrimmer @JvmOverloads constructor(
         binding.timeLineView.layoutParams = lp
     }
 
-    fun handleUi() {
+    fun onSaveClicked() {
         binding.iconVideoPlay.visibility = View.VISIBLE
         binding.videoLoader.pause()
-    }
-
-    fun onSaveClicked() {
         mOnVideoEditedListener?.onTrimStarted()
 
         val mediaMetadataRetriever = MediaMetadataRetriever()
@@ -202,7 +205,7 @@ class VideoTrimmer @JvmOverloads constructor(
         val metaDataKeyDuration =
             java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
 
-        val file = mSrc.fileFromContentUri(context)
+        val file = File(mSrc.path ?: "")
 
         if (mTimeVideo < MIN_TIME_FRAME) {
             if (metaDataKeyDuration - mEndPosition > MIN_TIME_FRAME - mTimeVideo) mEndPosition += MIN_TIME_FRAME - mTimeVideo
@@ -249,15 +252,16 @@ class VideoTrimmer @JvmOverloads constructor(
             java.lang.Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
         Log.e("FRAME RATE", frameRate.toString())
         Log.e("FRAME COUNT", (duration / 1000 * frameRate).toString())
+
         handleVideoCrop(file)
     }
 
     private fun handleVideoCrop(file: File) {
         val rect = binding.cropFrame.cropRect ?: return
-        val width = abs(rect.left - rect.right)
-        val height = abs(rect.top - rect.bottom)
-        val x = rect.left
-        val y = rect.top
+        var width = abs(rect.left - rect.right)
+        var height = abs(rect.top - rect.bottom)
+        var x = rect.left
+        var y = rect.top
         val root = File(destinationPath)
         root.mkdirs()
         val outputFileUri = Uri.fromFile(
@@ -301,30 +305,28 @@ class VideoTrimmer @JvmOverloads constructor(
         val xPercentage = (x * 100) / videoPlayerWidth
         val yPercentage = (y * 100) / videoPlayerHeight
 
-        var width2: Int = width
-        var height2: Int = height
-        var x2: Int = x
-        var y2: Int = y
+        width = (width * originalVideoWidth) / videoPlayerWidth
+        x = originalVideoWidth * xPercentage / 100
 
-        width2 = (width * originalVideoWidth) / videoPlayerWidth
-        x2 = originalVideoWidth * xPercentage / 100
+        height = (height * originalVideoHeight) / videoPlayerHeight
+        y = originalVideoHeight * (yPercentage + 1) / 100
 
-        height2 = (height * originalVideoHeight) / videoPlayerHeight
-        y2 = originalVideoHeight * (yPercentage + 1)  / 100
-
-        VideoOptions(context).trimAndCropVideo(
-            width2,
-            height2,
-            x2,
-            y2,
-            frameCount.toInt(),
-            TrimVideoUtils.stringForTime(mStartPosition),
-            TrimVideoUtils.stringForTime(mEndPosition),
-            file.path,
-            outPutPath,
-            outputFileUri,
-            mOnVideoEditedListener
-        )
+        // run in IO Thread
+        findViewTreeLifecycleOwner()?.lifecycleScope?.launch(Dispatchers.IO) {
+            VideoOptions(context).trimAndCropVideo(
+                width = width,
+                height = height,
+                x = x,
+                y = y,
+                bitrate = bitRate,
+                startPosition = TrimVideoUtils.stringForTime(mStartPosition),
+                endPosition = TrimVideoUtils.stringForTime(mEndPosition),
+                inputPath = file.path,
+                outputPath = outPutPath,
+                outputFileUri = outputFileUri,
+                listener = mOnVideoEditedListener
+            )
+        }
     }
 
     private fun onClickVideoPlayPause() {
@@ -349,6 +351,8 @@ class VideoTrimmer @JvmOverloads constructor(
     }
 
     private fun onVideoPrepared(mp: MediaPlayer) {
+        if (isVideoPrepared) return
+        isVideoPrepared = true
         val videoWidth = mp.videoWidth
         val videoHeight = mp.videoHeight
         val videoProportion = videoWidth.toFloat() / videoHeight.toFloat()
@@ -470,17 +474,22 @@ class VideoTrimmer @JvmOverloads constructor(
         setProgressBarPosition(time)
     }
 
-    fun setVideoInformationVisibility(visible: Boolean): VideoTrimmer {
+    fun setBitrate(bitRate: Int): VideoEditor {
+        this.bitRate = bitRate
+        return this
+    }
+
+    fun setVideoInformationVisibility(visible: Boolean): VideoEditor {
         binding.timeFrame.visibility = if (visible) View.VISIBLE else View.GONE
         return this
     }
 
-    fun setOnTrimVideoListener(onVideoEditedListener: OnVideoEditedListener): VideoTrimmer {
+    fun setOnTrimVideoListener(onVideoEditedListener: OnVideoEditedListener): VideoEditor {
         mOnVideoEditedListener = onVideoEditedListener
         return this
     }
 
-    fun setOnVideoListener(onVideoListener: OnVideoListener): VideoTrimmer {
+    fun setOnVideoListener(onVideoListener: OnVideoListener): VideoEditor {
         mOnVideoListener = onVideoListener
         return this
     }
@@ -490,39 +499,43 @@ class VideoTrimmer @JvmOverloads constructor(
         UiThreadExecutor.cancelAll("")
     }
 
-    fun setMaxDuration(maxDuration: Int): VideoTrimmer {
+    fun setMaxDuration(maxDuration: Int): VideoEditor {
         mMaxDuration = maxDuration * 1000
         return this
     }
 
-    fun setMinDuration(minDuration: Int): VideoTrimmer {
+    fun setMinDuration(minDuration: Int): VideoEditor {
         mMinDuration = minDuration * 1000
         return this
     }
 
-    fun setDestinationPath(path: String): VideoTrimmer {
+    fun setDestinationPath(path: String): VideoEditor {
         destinationPath = path
         return this
     }
 
-    fun setVideoURI(videoURI: Uri): VideoTrimmer {
+    fun setVideoURI(videoURI: Uri): VideoEditor {
         mSrc = videoURI
         binding.videoLoader.setVideoURI(mSrc)
         binding.videoLoader.requestFocus()
         binding.timeLineView.setVideo(mSrc)
         val mediaMetadataRetriever = MediaMetadataRetriever()
         mediaMetadataRetriever.setDataSource(context, mSrc)
-        val metaDateWidth =  mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
-            ?.toInt() ?: 0
-        val metaDataHeight =  mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
-            ?.toInt() ?: 0
+        val metaDateWidth =
+            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+                ?.toInt() ?: 0
+        val metaDataHeight =
+            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+                ?.toInt() ?: 0
 
         //If the rotation is 90 or 270 the width and height will be transposed.
-        when(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)?.toInt()) {
-              90,270 -> {
+        when (mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)
+            ?.toInt()) {
+            90, 270 -> {
                 originalVideoWidth = metaDataHeight
                 originalVideoHeight = metaDateWidth
             }
+
             else -> {
                 originalVideoWidth = metaDateWidth
                 originalVideoHeight = metaDataHeight
@@ -544,13 +557,21 @@ class VideoTrimmer @JvmOverloads constructor(
                 ?.let { drawableToBitmap(it, width, height) })
     }
 
-    fun setTextTimeSelectionTypeface(tf: Typeface?): VideoTrimmer {
+    fun setTextTimeSelectionTypeface(tf: Typeface?): VideoEditor {
         if (tf != null) binding.textTimeSelection.typeface = tf
         return this
     }
 
-    private class MessageHandler(view: VideoTrimmer) : Handler() {
-        private val mView: WeakReference<VideoTrimmer> = WeakReference(view)
+    fun onResume() {
+        binding.videoLoader.seekTo(videoPlayerCurrentPosition)
+    }
+
+    fun onPause() {
+        videoPlayerCurrentPosition =  binding.videoLoader.currentPosition
+    }
+
+    private class MessageHandler(view: VideoEditor) : Handler() {
+        private val mView: WeakReference<VideoEditor> = WeakReference(view)
         override fun handleMessage(msg: Message) {
             val view = mView.get()
             if (view == null || view.binding.videoLoader == null) return
