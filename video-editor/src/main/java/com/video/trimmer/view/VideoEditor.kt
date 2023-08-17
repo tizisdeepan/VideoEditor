@@ -32,6 +32,7 @@ import com.video.trimmer.utils.RealPathUtil
 import com.video.trimmer.utils.TrimVideoUtils
 import com.video.trimmer.utils.UiThreadExecutor
 import com.video.trimmer.utils.VideoOptions
+import com.video.trimmer.utils.VideoQuality
 import com.video.trimmer.utils.drawableToBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -72,6 +73,7 @@ class VideoEditor @JvmOverloads constructor(
     private var bitRate: Int = 2
     private var isVideoPrepared = false
     private var videoPlayerCurrentPosition = 0
+    private var videoQuality = VideoQuality.Medium
     private var destinationPath: String
         get() {
             if (mFinalPath == null) {
@@ -298,10 +300,11 @@ class VideoEditor @JvmOverloads constructor(
         }
         val mediaMetadataRetriever = MediaMetadataRetriever()
         mediaMetadataRetriever.setDataSource(context, mSrc)
-        val duration =
-            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                ?.let { java.lang.Long.parseLong(it) } ?: 0
-        val frameCount = duration / 1000 * frameRate
+
+        val bitRate =
+            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
+                ?.toDouble() ?: MIN_BITRATE
+
         val xPercentage = (x * 100) / videoPlayerWidth
         val yPercentage = (y * 100) / videoPlayerHeight
 
@@ -318,7 +321,7 @@ class VideoEditor @JvmOverloads constructor(
                 height = height,
                 x = x,
                 y = y,
-                bitrate = bitRate,
+                bitrate =  getBitrate(bitRate.bitToMb(), videoQuality),
                 startPosition = TrimVideoUtils.stringForTime(mStartPosition),
                 endPosition = TrimVideoUtils.stringForTime(mEndPosition),
                 inputPath = file.path,
@@ -326,6 +329,24 @@ class VideoEditor @JvmOverloads constructor(
                 outputFileUri = outputFileUri,
                 listener = mOnVideoEditedListener
             )
+        }
+    }
+
+    /**
+     * Get fixed bitrate value based on the file's current bitrate
+     * @param bitrate file's current bitrate
+     * @return new smaller bitrate value
+     */
+    private fun getBitrate(
+        bitrate: Double,
+        quality: VideoQuality,
+    ): Double {
+        if (bitrate < 1) return 1.0
+        return when (quality) {
+            VideoQuality.Low -> (bitrate * 0.2)
+            VideoQuality.Medium -> (bitrate * 0.3)
+            VideoQuality.High -> (bitrate * 0.4)
+            VideoQuality.VeryHigh -> (bitrate * 0.6)
         }
     }
 
@@ -514,6 +535,11 @@ class VideoEditor @JvmOverloads constructor(
         return this
     }
 
+    fun setVideoQuality(videoQuality: VideoQuality): VideoEditor {
+        this.videoQuality = videoQuality
+        return this
+    }
+
     fun setVideoURI(videoURI: Uri): VideoEditor {
         mSrc = videoURI
         binding.videoLoader.setVideoURI(mSrc)
@@ -567,7 +593,7 @@ class VideoEditor @JvmOverloads constructor(
     }
 
     fun onPause() {
-        videoPlayerCurrentPosition =  binding.videoLoader.currentPosition
+        videoPlayerCurrentPosition = binding.videoLoader.currentPosition
     }
 
     private class MessageHandler(view: VideoEditor) : Handler() {
@@ -583,5 +609,10 @@ class VideoEditor @JvmOverloads constructor(
     companion object {
         private const val MIN_TIME_FRAME = 1000
         private const val SHOW_PROGRESS = 2
+        private const val MIN_BITRATE = 1500000.0
+
     }
 }
+
+private fun Double.bitToMb() = this / 1000000
+

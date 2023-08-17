@@ -18,7 +18,7 @@ class VideoOptions(private var ctx: Context) {
         height: Int,
         x: Int,
         y: Int,
-        bitrate: Int,
+        bitrate: Double,
         startPosition: String,
         endPosition: String,
         inputPath: String,
