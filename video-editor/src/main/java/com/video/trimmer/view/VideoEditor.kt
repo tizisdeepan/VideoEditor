@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.Calendar
+import java.util.Locale
 import kotlin.math.abs
 
 class VideoEditor @JvmOverloads constructor(
@@ -431,6 +432,7 @@ class VideoEditor @JvmOverloads constructor(
     private fun setTimeFrames() {
         val seconds = context.getString(R.string.short_seconds)
         binding.textTimeSelection.text = String.format(
+            Locale.ENGLISH,
             "%s %s - %s %s",
             TrimVideoUtils.stringForTime(mStartPosition),
             seconds,
