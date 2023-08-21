@@ -7,4 +7,5 @@ interface OnVideoEditedListener {
     fun getResult(uri: Uri)
     fun cancelAction()
     fun onError(message: String)
+    fun onProgress(percentage: Int)
 }

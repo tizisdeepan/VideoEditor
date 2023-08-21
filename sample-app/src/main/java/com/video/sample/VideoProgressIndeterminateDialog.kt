@@ -25,4 +25,8 @@ class VideoProgressIndeterminateDialog(private var ctx: Context, private var mes
 
         binding.messageLabel.typeface = FontsHelper[ctx, FontsConstants.SEMI_BOLD]
     }
+
+    fun updateProgress(newMessage : String){
+        binding.messageLabel.text = newMessage
+    }
 }

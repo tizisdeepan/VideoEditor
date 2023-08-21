@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.FFmpegKitConfig
+
 import com.arthenica.ffmpegkit.ReturnCode
 import com.video.trimmer.interfaces.OnVideoEditedListener
 
@@ -19,6 +21,7 @@ class VideoOptions(private var ctx: Context) {
         x: Int,
         y: Int,
         bitrate: Double,
+        totalVideoDuration: Long,
         startPosition: String,
         endPosition: String,
         inputPath: String,
@@ -36,10 +39,18 @@ class VideoOptions(private var ctx: Context) {
             .append(" -vcodec libx264 -b ${bitrate}M -preset ultrafast ")
             .append(" -c:a copy ").append(outputPath)
 
+        FFmpegKitConfig.enableStatisticsCallback { newStatistics ->
+            val timeInMilliseconds = newStatistics.time;
+            if (timeInMilliseconds > 0) {
+                val completePercentage = (timeInMilliseconds * 100) / totalVideoDuration
+                listener?.onProgress(completePercentage.toInt())
+            }
+        }
+
         val session = FFmpegKit.execute(command.toString())
         if (ReturnCode.isSuccess(session.returnCode)) {
             // SUCCESS2
-             listener?.getResult(outputFileUri)
+            listener?.getResult(outputFileUri)
             Log.e(TAG, "onFinish: ")
         } else if (ReturnCode.isCancel(session.returnCode)) {
             // CANCEL
@@ -52,5 +63,4 @@ class VideoOptions(private var ctx: Context) {
         }
 
     }
-
 }

@@ -306,6 +306,9 @@ class VideoEditor @JvmOverloads constructor(
             mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)
                 ?.toDouble() ?: MIN_BITRATE
 
+        val duration =
+            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
+
         val xPercentage = (x * 100) / videoPlayerWidth
         val yPercentage = (y * 100) / videoPlayerHeight
 
@@ -328,7 +331,8 @@ class VideoEditor @JvmOverloads constructor(
                 inputPath = file.path,
                 outputPath = outPutPath,
                 outputFileUri = outputFileUri,
-                listener = mOnVideoEditedListener
+                listener = mOnVideoEditedListener,
+                totalVideoDuration = duration ?: 0
             )
         }
     }

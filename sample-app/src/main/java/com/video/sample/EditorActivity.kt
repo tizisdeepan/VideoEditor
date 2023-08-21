@@ -120,6 +120,7 @@ class EditorActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListen
         super.onPause()
         binding.videoTrimmer.onPause()
     }
+
     override fun onResume() {
         super.onResume()
         binding.videoTrimmer.onResume()
@@ -140,6 +141,13 @@ class EditorActivity : AppCompatActivity(), OnVideoEditedListener, OnVideoListen
         Log.e("ERROR", message)
         // delete temp file after use it
         tempFile?.delete()
+    }
+
+    override fun onProgress(percentage: Int) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            progressDialog.updateProgress("Cropping video. Please wait..  " +
+                    "$percentage %")
+        }
     }
 
     override fun onVideoPrepared() {
