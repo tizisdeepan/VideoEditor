@@ -3,7 +3,7 @@
 [![](https://jitpack.io/v/mohamed0017/SimpleVideoEditor.svg)](https://jitpack.io/#mohamed0017/SimpleVideoEditor)
 
 <table>
-    <tr><td align="center"><img src="https://github.com/tizisdeepan/VideoEditor/blob/master/Screenshots/ve1.png" alt="Video Editot" width="100%"></td>
+    <tr><td align="center"><img src="https://github.com/mohamed0017/SimpleVideoEditor/blob/master/Screenshots/Screenshot_2023-08-26-16-58-44-339_com.video.sample%20(1).jpg" alt="Video Editor" width="100%"></td>
     <tr><td align="center"><b>Video Editor</b></td>
 </table>
 
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity(), OnTrimVideoListener {
     override fun onError(message: String){
     }
     override fun onProgress(percentage: Int){
-     }
+    }
 }
 
 ```
@@ -60,7 +60,7 @@ videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMI_
                     .setVideoInformationVisibility(true)
                     .setMaxDuration(10)
                     .setMinDuration(2)
-                    .setVideoQuality(VideoQuality.Medium)
+                    .setVideoQuality(VideoQuality.Medium) // set video quality
                     .setDestinationPath(Environment.getExternalStorageDirectory().path + File.separator + Environment.DIRECTORY_MOVIES)
 ```
 ### [8] Create instances and set default values for the VideoCropper in your Activity/ Fragment
@@ -76,7 +76,7 @@ Voila! You have implemented an awesome Video Editor for your Android Project now
 Developed By 
 ------------
 
-* Mohamed Hussien - <m.hussien.m44@gmail.com> Forked from <a href="https://github.com/tizisdeepan/VideoEditor">
+* Mohamed Hussien - <m.hussien.m44@gmail.com> Forked from <a href="https://github.com/tizisdeepan/VideoEditor"> Tizisdeepan </a>
 
 <a href="https://www.linkedin.com/in/mohamed-hussien-a5608613b">
   <img alt="Add me to Linkedin" src="./Screenshots/linkedin.png" />
