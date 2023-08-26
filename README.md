@@ -8,7 +8,7 @@
 </table>
 
 ## About Library
-FFmpeg is a powerful multimedia framework which allows us to decode, encode, transcode, stream, filter and play most of the media content available now. With the help of these tools, you can develop and application that can manipulate any form of media to the desired output. Sky is not the limit when using FFmpeg. I prefer FFmpeg-all which is a Bible for FFmpeg but it is difficult to read if you do not know what you are looking for. To make it easy, I will summarise the basics of video manipulations using FFmpeg which, then you can use in your own applications or libraries that you are working on. I have developed a simple library that enables you to trim and crop a video, additionally you can compress any video and convert it into any format that you desire.
+Simple video editor Library contains the following features (cropping/trimming/compressing) videos, using FFmpegKit Libary. 
 
 ## Implementation
 ### [1] In your app module gradle file
