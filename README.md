@@ -1,12 +1,10 @@
-# Video Trimmer
+# Simple Video Trimmerw
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![](https://jitpack.io/v/mohamed0017/SimpleVideoEditor.svg)](https://jitpack.io/#mohamed0017/SimpleVideoEditor)
 
 <table>
-    <tr><td align="center"><img src="https://github.com/tizisdeepan/VideoEditor/blob/master/Screenshots/ve1.png" alt="Video Trimmer" width="100%"></td>
-    <td align="center"><img src="https://github.com/tizisdeepan/VideoEditor/blob/master/Screenshots/ve2.png" alt="Video Cropper" width="100%"></td></tr>
-    <tr><td align="center"><b>Video Trimmer</b></td>
-    <td align="center"><b>Video Cropper</b></td></tr>
+    <tr><td align="center"><img src="https://github.com/tizisdeepan/VideoEditor/blob/master/Screenshots/ve1.png" alt="Video Editot" width="100%"></td>
+    <tr><td align="center"><b>Video Editor</b></td>
 </table>
 
 ## About Library
@@ -30,21 +28,13 @@ allprojects {
 ```
 ### [3] Use VideoTrimmer in your layout.xml
 ```xml
-<com.video.trimmer.view.VideoTrimmer
+    <com.video.trimmer.view.VideoEditor
         android:id="@+id/videoTrimmer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/header"/>
 ```
-### [4] Use VideoCropper in your layout.xml
-```xml
-<com.video.trimmer.view.VideoCropper
-        android:id="@+id/videoCropper"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/header"/>
-```
-### [5] Implement OnTrimVideoListener on your Activity/ Fragment
+### [4] Implement OnVideoEditedListener on your Activity/ Fragment
 ```kotlin
 class MainActivity : AppCompatActivity(), OnTrimVideoListener {
     ...
@@ -56,25 +46,12 @@ class MainActivity : AppCompatActivity(), OnTrimVideoListener {
     }
     override fun onError(message: String){
     }
+    override fun onProgress(percentage: Int){
+     }
 }
+
 ```
-### [6] Implement OnCropVideoListener on your Activity/ Fragment
-```kotlin
-class MainActivity : AppCompatActivity(), OnTrimVideoListener {
-    ...
-    override fun onCropStarted(){
-    }
-    override fun getResult(uri: Uri){
-    }
-    override fun cancelAction(){
-    }
-    override fun onError(message: String){
-    }
-    override fun onProgress(progress: Float){
-    }
-}
-```
-### [7] Create instances and set default values for the VideoTrimmer in your Activity/ Fragment
+### [5] Create instances and set default values for the VideoTrimmer in your Activity/ Fragment
 ```kotlin
 videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMI_BOLD])
                     .setOnTrimVideoListener(this)
@@ -83,6 +60,7 @@ videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMI_
                     .setVideoInformationVisibility(true)
                     .setMaxDuration(10)
                     .setMinDuration(2)
+                    .setVideoQuality(VideoQuality.Medium)
                     .setDestinationPath(Environment.getExternalStorageDirectory().path + File.separator + Environment.DIRECTORY_MOVIES)
 ```
 ### [8] Create instances and set default values for the VideoCropper in your Activity/ Fragment
@@ -95,14 +73,11 @@ videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMI_
 
 Voila! You have implemented an awesome Video Editor for your Android Project now!
 
-Developed By
+Developed By 
 ------------
 
-* Deepan Elango - <tizisdeepan@gmail.com>
+* Mohamed Hussien - <m.hussien.m44@gmail.com> Forked from <a href="https://github.com/tizisdeepan/VideoEditor">
 
-<a href="https://twitter.com/tizisdeepan">
-  <img alt="Follow me on Twitter" src="./Screenshots/twitter.png" />
-</a>
-<a href="https://www.linkedin.com/in/tizisdeepan/">
+<a href="https://www.linkedin.com/in/mohamed-hussien-a5608613b">
   <img alt="Add me to Linkedin" src="./Screenshots/linkedin.png" />
 </a>
