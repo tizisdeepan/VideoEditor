@@ -3,7 +3,7 @@
 [![](https://jitpack.io/v/mohamed0017/SimpleVideoEditor.svg)](https://jitpack.io/#mohamed0017/SimpleVideoEditor)
 
 <table>
-    <tr><td align="center"><img src="https://github.com/mohamed0017/SimpleVideoEditor/blob/master/Screenshots/Screenshot_2023-08-26-16-58-44-339_com.video.sample%20(1).jpg" alt="Video Editor" width="100%"></td>
+    <tr><td align="center"><img src="https://github.com/mohamed0017/SimpleVideoEditor/blob/master/Screenshots/Screenshot_2023-08-26-16-58-44-339_com.video.sample%20(1).jpg" alt="Video Editor" width="50%"></td>
     <tr><td align="center"><b>Video Editor</b></td>
 </table>
 
