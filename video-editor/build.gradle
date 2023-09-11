@@ -1,15 +1,13 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'maven-publish'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 34
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion 24
+        targetSdkVersion 34
     }
     buildTypes {
         release {
@@ -17,16 +15,38 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'org.jetbrains.anko:anko-sqlite:0.10.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.writingminds:FFmpegAndroid:0.3.2'
-    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
+    implementation 'com.arthenica:ffmpeg-kit-min-gpl:5.1'
+    implementation 'com.vanniktech:android-image-cropper:4.5.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
 }
 repositories {
     mavenCentral()
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.github.mohamed0017'
+            artifactId = 'SimpleVideoEditor'
+            version = '1.0.8'
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
 }

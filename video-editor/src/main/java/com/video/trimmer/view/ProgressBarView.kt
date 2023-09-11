@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
-import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import com.video.trimmer.R
@@ -27,8 +26,8 @@ class ProgressBarView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
     private fun init() {
-        val lineProgress = ContextCompat.getColor(context, R.color.progress_color)
-        val lineBackground = ContextCompat.getColor(context, R.color.background_progress_color)
+        val lineProgress = context.getColor( R.color.progress_color)
+        val lineBackground = context.getColor(R.color.background_progress_color)
 
         mProgressHeight = context.resources.getDimensionPixelOffset(R.dimen.progress_video_line_height)
 

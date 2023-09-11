@@ -10,17 +10,20 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.video.trimmer.utils.FileUtils
-import kotlinx.android.synthetic.main.activity_main.*
+import com.video.sample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        trimmerButton.setOnClickListener { pickFromGallery(REQUEST_VIDEO_TRIMMER) }
-        cropperButton.setOnClickListener { pickFromGallery(REQUEST_VIDEO_CROPPER) }
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
+        binding.trimmerButton.setOnClickListener { pickFromGallery(REQUEST_VIDEO_TRIMMER) }
+        binding.cropperButton.setOnClickListener { pickFromGallery(REQUEST_VIDEO_CROPPER) }
     }
 
     private fun pickFromGallery(intentCode: Int) {
@@ -42,34 +45,21 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     Toast.makeText(this@MainActivity, R.string.toast_cannot_retrieve_selected_video, Toast.LENGTH_SHORT).show()
                 }
-            } else if (requestCode == REQUEST_VIDEO_CROPPER) {
-                val selectedUri = data!!.data
-                if (selectedUri != null) {
-                    startCropActivity(selectedUri)
-                } else {
-                    Toast.makeText(this@MainActivity, R.string.toast_cannot_retrieve_selected_video, Toast.LENGTH_SHORT).show()
-                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun startTrimActivity(uri: Uri) {
-        val intent = Intent(this, TrimmerActivity::class.java)
-        intent.putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this, uri))
-        startActivity(intent)
-    }
-
-    private fun startCropActivity(uri: Uri) {
-        val intent = Intent(this, CropperActivity::class.java)
-        intent.putExtra(EXTRA_VIDEO_PATH, FileUtils.getPath(this, uri))
+        val intent = Intent(this, EditorActivity::class.java)
+        intent.putExtra(EXTRA_VIDEO_URI_STRING, uri.toString())
         startActivity(intent)
     }
 
     companion object {
         private const val REQUEST_VIDEO_TRIMMER = 0x01
         private const val REQUEST_VIDEO_CROPPER = 0x02
-        internal const val EXTRA_VIDEO_PATH = "EXTRA_VIDEO_PATH"
+        internal const val EXTRA_VIDEO_URI_STRING = "EXTRA_VIDEO_PATH"
     }
 
     lateinit var doThis: () -> Unit
@@ -83,6 +73,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             101 -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {

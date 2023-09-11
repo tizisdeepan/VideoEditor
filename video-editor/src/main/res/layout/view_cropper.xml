@@ -6,7 +6,7 @@
     android:background="#2f3031"
     android:orientation="vertical">
 
-    <com.theartofdev.edmodo.cropper.CropImageView
+    <com.canhub.cropper.CropImageView
         android:id="@+id/cropFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
