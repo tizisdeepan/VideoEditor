@@ -72,12 +72,3 @@ videoTrimmer.setTextTimeSelectionTypeface(FontsHelper[this, FontsConstants.SEMI_
 ```
 
 Voila! You have implemented an awesome Video Editor for your Android Project now!
-
-Developed By 
-------------
-
-* Mohamed Hussien - <m.hussien.m44@gmail.com> Forked from <a href="https://github.com/tizisdeepan/VideoEditor"> Tizisdeepan </a>
-
-<a href="https://www.linkedin.com/in/mohamed-hussien-a5608613b">
-  <img alt="Add me to Linkedin" src="./Screenshots/linkedin.png" />
-</a>
